@@ -4,8 +4,27 @@
 #include <stdlib.h>
 #include <string.h>
 #define YY_DECL int alpha_yylex (void* ylval)
+
+enum types{
+	IF,
+	ELSE,
+	WHILE,
+	FOR,
+	FUNCTION,
+	RETURN,
+	BREAK,
+	CONTINUE,
+	AND,
+	NOT,
+	OR,
+	LOCAL,
+	TRUE,
+	FALSE,
+	NIL
+};
+
+
 struct alphastruct {
-	int type;
 };
 
 typedef struct alphastruct* alpha_token_t;
@@ -57,10 +76,13 @@ lineCom		\/\/.*
 					}
 				}
 				int sum;
+
 				if(sum = isComment(1, 1)) {
 					if(sum > 1){
-
-						fprintf(out, "%d: MULTILINE NESTED COMMENT\n", yylineno);
+						int i;
+						for (i=1; i<sum; i++) {
+							fprintf(out, "%d: MULTILINE NESTED COMMENT\n", yylineno);
+						}
 					}
 					fprintf(out, "%d: MULTILINE COMMENT\n", yylineno);
 				}
@@ -69,54 +91,53 @@ lineCom		\/\/.*
 
 {lineCom}	{fprintf(out, "%d: SINGLE LINE COMMENT\n", yylineno);}	
 
-"if"		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"else" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"while"		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"for" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"function"	{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"return"	{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"break" 	{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"continue"	{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"and" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"not" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"or"		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"local" 	{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"true" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"false" 	{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
-"nil"		{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+"if"		{fprintf(out, "%d: #%d \"%s\" KEYWORD IF\n", yylineno, tknum++, yytext);}
+"else" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD ELSE\n", yylineno, tknum++, yytext);}
+"while"		{fprintf(out, "%d: #%d \"%s\" KEYWORD WHILE\n", yylineno, tknum++, yytext);}
+"for" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD FOR\n", yylineno, tknum++, yytext);}
+"function"	{fprintf(out, "%d: #%d \"%s\" KEYWORD FUNCTION\n", yylineno, tknum++, yytext);}
+"return"	{fprintf(out, "%d: #%d \"%s\" KEYWORD RETURN\n", yylineno, tknum++, yytext);}
+"break" 	{fprintf(out, "%d: #%d \"%s\" KEYWORD BREAK\n", yylineno, tknum++, yytext);}
+"continue"	{fprintf(out, "%d: #%d \"%s\" KEYWORD CONTINUE\n", yylineno, tknum++, yytext);}
+"and" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD AND\n", yylineno, tknum++, yytext);}
+"not" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD NOT\n", yylineno, tknum++, yytext);}
+"or"		{fprintf(out, "%d: #%d \"%s\" KEYWORD OR\n", yylineno, tknum++, yytext);}
+"local" 	{fprintf(out, "%d: #%d \"%s\" KEYWORD LOCAL\n", yylineno, tknum++, yytext);}
+"true" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD TRUE\n", yylineno, tknum++, yytext);}
+"false" 	{fprintf(out, "%d: #%d \"%s\" KEYWORD FALSE\n", yylineno, tknum++, yytext);}
+"nil"		{fprintf(out, "%d: #%d \"%s\" KEYWORD NIL\n", yylineno, tknum++, yytext);}
 
 " "			{ ; }
-"\n"		{
- ; }
+"\n"		{; }
 "\t"		{ ; }
 
-"=" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"+" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"-" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"*" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"/" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"%" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"==" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"!=" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"++" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"--"		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-">" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"<" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-">=" 		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
-"<="		{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+"=" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR ASSIGN\n", yylineno, tknum++, yytext);}
+"+" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR UNARY_PLUS\n", yylineno, tknum++, yytext);}
+"-" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR UNARY_MINUS\n", yylineno, tknum++, yytext);}
+"*" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR MULTIPLIES\n", yylineno, tknum++, yytext);}
+"/" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR DIVIDES\n", yylineno, tknum++, yytext);}
+"%" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR MODULUS\n", yylineno, tknum++, yytext);}
+"==" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR EQUAL\n", yylineno, tknum++, yytext);}
+"!=" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR INEQUAL\n", yylineno, tknum++, yytext);}
+"++" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR INCREMENT\n", yylineno, tknum++, yytext);}
+"--"		{fprintf(out, "%d: #%d \"%s\" OPERATOR DECREMENT\n", yylineno, tknum++, yytext);}
+">" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR GREATER\n", yylineno, tknum++, yytext);}
+"<" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR LESS\n", yylineno, tknum++, yytext);}
+">=" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR GREATER_EQUAL\n", yylineno, tknum++, yytext);}
+"<="		{fprintf(out, "%d: #%d \"%s\" OPERATOR LESS_EQUAL\n", yylineno, tknum++, yytext);}
 
-"{" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-"}" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-"[" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-"]" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-"(" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-")" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-";" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-"," 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-":" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-"::" 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-{dot} 		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
-".."		{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+"{" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_BRACES\n", yylineno, tknum++, yytext);}
+"}" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_BRACES\n", yylineno, tknum++, yytext);}
+"[" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_BRACKETS\n", yylineno, tknum++, yytext);}
+"]" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_BRACKETS\n", yylineno, tknum++, yytext);}
+"(" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_PARENTHESIS\n", yylineno, tknum++, yytext);}
+")" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_PARENTHESIS\n", yylineno, tknum++, yytext);}
+";" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER	SEMICOLON\n", yylineno, tknum++, yytext);}
+"," 		{fprintf(out, "%d: #%d \"%s\" DELIMITER COMA\n", yylineno, tknum++, yytext);}
+":" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER COLON\n", yylineno, tknum++, yytext);}
+"::" 		{fprintf(out, "%d: #%d \"%s\" DELIMITER DOUBLE_COLON\n", yylineno, tknum++, yytext);}
+{dot} 		{fprintf(out, "%d: #%d \"%s\" DELIMITER POINT\n", yylineno, tknum++, yytext);}
+".."		{fprintf(out, "%d: #%d \"%s\" DELIMITER DOUBLE_POINT\n", yylineno, tknum++, yytext);}
 
 {id}		{fprintf(out, "%d: #%d \"%s\" ID\n", yylineno, tknum++, yytext);}
 {intconst}	{fprintf(out, "%d: #%d \"%s\" INTCONST\n", yylineno, tknum++, yytext);}

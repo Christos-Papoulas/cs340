@@ -558,8 +558,27 @@ char *yytext;
 #include <stdlib.h>
 #include <string.h>
 #define YY_DECL int alpha_yylex (void* ylval)
+
+enum types{
+	IF,
+	ELSE,
+	WHILE,
+	FOR,
+	FUNCTION,
+	RETURN,
+	BREAK,
+	CONTINUE,
+	AND,
+	NOT,
+	OR,
+	LOCAL,
+	TRUE,
+	FALSE,
+	NIL
+};
+
+
 struct alphastruct {
-	int type;
 };
 
 typedef struct alphastruct* alpha_token_t;
@@ -567,7 +586,7 @@ FILE* out;
 int tknum = 1;
 
 
-#line 571 "alpha.c"
+#line 590 "alpha.c"
 
 #define INITIAL 0
 
@@ -776,10 +795,10 @@ YY_DECL
 		}
 
 	{
-#line 29 "scanner.l"
+#line 48 "scanner.l"
 
 
-#line 783 "alpha.c"
+#line 802 "alpha.c"
 
 	while ( 1 )		/* loops until end-of-file is reached */
 		{
@@ -848,7 +867,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 31 "scanner.l"
+#line 50 "scanner.l"
 {
 				int isComment(int commNum, int sum) {
 					char c;
@@ -878,10 +897,13 @@ YY_RULE_SETUP
 					}
 				}
 				int sum;
+
 				if(sum = isComment(1, 1)) {
 					if(sum > 1){
-
-						fprintf(out, "%d: MULTILINE NESTED COMMENT\n", yylineno);
+						int i;
+						for (i=1; i<sum; i++) {
+							fprintf(out, "%d: MULTILINE NESTED COMMENT\n", yylineno);
+						}
 					}
 					fprintf(out, "%d: MULTILINE COMMENT\n", yylineno);
 				}
@@ -890,250 +912,249 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 70 "scanner.l"
+#line 92 "scanner.l"
 {fprintf(out, "%d: SINGLE LINE COMMENT\n", yylineno);}	
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 72 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 94 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD IF\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 73 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 95 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD ELSE\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 74 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 96 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD WHILE\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 75 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 97 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD FOR\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 76 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 98 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD FUNCTION\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 77 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 99 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD RETURN\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 78 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 100 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD BREAK\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 79 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 101 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD CONTINUE\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 80 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 102 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD AND\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 81 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 103 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD NOT\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 82 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 104 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD OR\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 83 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 105 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD LOCAL\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 84 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 106 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD TRUE\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 85 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 107 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD FALSE\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 86 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" KEYWORD\n", yylineno, tknum++, yytext);}
+#line 108 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" KEYWORD NIL\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 88 "scanner.l"
+#line 110 "scanner.l"
 { ; }
 	YY_BREAK
 case 19:
 /* rule 19 can match eol */
 YY_RULE_SETUP
-#line 89 "scanner.l"
-{
- ; }
+#line 111 "scanner.l"
+{; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 91 "scanner.l"
+#line 112 "scanner.l"
 { ; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 93 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 114 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR ASSIGN\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 94 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 115 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR UNARY_PLUS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 95 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 116 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR UNARY_MINUS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 96 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 117 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR MULTIPLIES\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 97 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 118 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR DIVIDES\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 98 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 119 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR MODULUS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 99 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 120 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR EQUAL\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 100 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 121 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR INEQUAL\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 101 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 122 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR INCREMENT\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 102 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 123 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR DECREMENT\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 103 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 124 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR GREATER\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 104 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 125 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR LESS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 105 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 126 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR GREATER_EQUAL\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 106 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" OPERANT\n", yylineno, tknum++, yytext);}
+#line 127 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" OPERATOR LESS_EQUAL\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 108 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 129 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_BRACES\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 109 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 130 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_BRACES\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 110 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 131 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_BRACKETS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 111 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 132 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_BRACKETS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 112 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 133 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_PARENTHESIS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 113 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 134 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_PARENTHESIS\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 114 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 135 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER	SEMICOLON\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 115 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 136 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER COMA\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 116 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 137 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER COLON\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 117 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 138 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER DOUBLE_COLON\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 118 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 139 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER POINT\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 119 "scanner.l"
-{fprintf(out, "%d: #%d \"%s\" PUNCTUATION\n", yylineno, tknum++, yytext);}
+#line 140 "scanner.l"
+{fprintf(out, "%d: #%d \"%s\" DELIMITER DOUBLE_POINT\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 121 "scanner.l"
+#line 142 "scanner.l"
 {fprintf(out, "%d: #%d \"%s\" ID\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 122 "scanner.l"
+#line 143 "scanner.l"
 {fprintf(out, "%d: #%d \"%s\" INTCONST\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 123 "scanner.l"
+#line 144 "scanner.l"
 {fprintf(out, "%d: #%d \"%s\" REALCONST\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 50:
 /* rule 50 can match eol */
 YY_RULE_SETUP
-#line 124 "scanner.l"
+#line 145 "scanner.l"
 {
 				char* str = malloc(sizeof(char)*strlen(yytext));
 				int i=0;
@@ -1170,15 +1191,15 @@ YY_RULE_SETUP
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 158 "scanner.l"
+#line 179 "scanner.l"
 {fprintf(stderr, "%d: #%d \"%s\" UKNOWN TOKKEN\n", yylineno, tknum++, yytext);}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 160 "scanner.l"
+#line 181 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 1182 "alpha.c"
+#line 1203 "alpha.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2185,7 +2206,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 160 "scanner.l"
+#line 181 "scanner.l"
 
 
 
