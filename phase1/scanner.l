@@ -5,7 +5,7 @@
 #include <string.h>
 #define YY_DECL int alpha_yylex (void* ylval)
 
-enum types{
+enum types {
 	IF,
 	ELSE,
 	WHILE,
@@ -20,17 +20,58 @@ enum types{
 	LOCAL,
 	TRUE,
 	FALSE,
-	NIL
+	NIL,
+	INT_CONST
+
 };
 
+FILE* out;
 
 struct alphastruct {
+	 char* cv;
+	 int iv;
+	 double dv;
+	 enum types type;
+	 int tokken_num;
+	 int line;
+	 struct alphastruct *next;
 };
-
 typedef struct alphastruct* alpha_token_t;
-FILE* out;
-int tknum = 1;
 
+alpha_token_t head = NULL;
+
+alpha_token_t new_node(char* cv, int iv, double dv, enum types type, int tokken_num, int line) {
+	alpha_token_t node = malloc(sizeof(struct alphastruct));
+	node->cv = cv;
+	node->iv = iv;
+	node->dv = dv;
+	node->type = type;
+	node->tokken_num = tokken_num;
+	node->line = line;
+	node->next = NULL;
+	return node;
+}
+
+alpha_token_t add_value(alpha_token_t head, char* cv, int iv, double dv, enum types type, int tokken_num, int line) {
+	alpha_token_t tmp;
+	if (head == NULL) {
+		head = new_node(cv, iv, dv, type, tokken_num, line);
+		return head;
+	}
+	for (tmp = head; tmp->next != NULL; tmp = tmp->next) { ; }
+	tmp->next = new_node(cv, iv, dv, type, tokken_num, line);
+	return head;
+}
+
+void print_tokkens(alpha_token_t head) {
+	alpha_token_t tmp;
+	if(head)
+		for (tmp = head; tmp->next != NULL; tmp = tmp->next) {
+			fprintf(out, "%d: #%d %s %d %lf %d\n", tmp->line, tmp->tokken_num, tmp->cv, tmp->iv, tmp->dv, tmp->type);	
+		}
+}
+
+int tknum = 1;
 
 %}
 
@@ -91,7 +132,11 @@ lineCom		\/\/.*
 
 {lineCom}	{fprintf(out, "%d: SINGLE LINE COMMENT\n", yylineno);}	
 
-"if"		{fprintf(out, "%d: #%d \"%s\" KEYWORD IF\n", yylineno, tknum++, yytext);}
+"if"		{
+				fprintf(out, "%d: #%d \"%s\" KEYWORD IF\n", yylineno, tknum++, yytext);
+				ylval = add_value(ylval, NULL, 0, 0, IF, tknum-1, yylineno);
+			}
+
 "else" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD ELSE\n", yylineno, tknum++, yytext);}
 "while"		{fprintf(out, "%d: #%d \"%s\" KEYWORD WHILE\n", yylineno, tknum++, yytext);}
 "for" 		{fprintf(out, "%d: #%d \"%s\" KEYWORD FOR\n", yylineno, tknum++, yytext);}
@@ -108,7 +153,7 @@ lineCom		\/\/.*
 "nil"		{fprintf(out, "%d: #%d \"%s\" KEYWORD NIL\n", yylineno, tknum++, yytext);}
 
 " "			{ ; }
-"\n"		{; }
+"\n"		{ ; }
 "\t"		{ ; }
 
 "=" 		{fprintf(out, "%d: #%d \"%s\" OPERATOR ASSIGN\n", yylineno, tknum++, yytext);}
@@ -182,7 +227,7 @@ lineCom		\/\/.*
 
 
 int main(int argc, char** argv) {
-	alpha_token_t aayylval;
+	alpha_token_t aayylval = NULL;
 	if (argc > 1) {
 		if (!(yyin =fopen(argv[1], "r"))) {
 			fprintf(stderr, "Can't read the file\n");
@@ -195,5 +240,6 @@ int main(int argc, char** argv) {
 	} else 
 		out = stdout;
 	alpha_yylex(aayylval); 
+	print_tokkens(aayylval);
 
 } 
