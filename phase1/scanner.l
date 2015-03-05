@@ -196,4 +196,4 @@ int main(int argc, char** argv) {
 		out = stdout;
 	alpha_yylex(aayylval); 
 
-}
+} 
