@@ -461,6 +461,8 @@ lineCom		\/\/.*
 						else if (yytext[i]=='\\')	str[j++]='\\';
 						else {
 							fprintf(stderr, "Warning: %d: Unknown special character %c\n", yylineno, yytext[i]);
+							str[j++]='\\';
+							str[j++]=yytext[i];
 						}
 					}
 
