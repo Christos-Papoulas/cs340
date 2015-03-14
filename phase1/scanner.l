@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#define YY_DECL int alpha_yylex (void* ylval)
+#include "parser.h"
+// #define YY_DECL int alpha_yylex (void* ylval)
 
 enum types {
 	E_IF,
@@ -171,90 +172,105 @@ lineCom		\/\/.*
 				fprintf(out, "%d: #%d \"%s\" KEYWORD IF\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_IF, tknum-1, yylineno);
 				assert(head != NULL);
+				return IF;
 			}
 
 "else" 		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD ELSE\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_ELSE, tknum-1, yylineno);
 				assert(head != NULL);
+				return ELSE;
 			}
 
 "while"		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD WHILE\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_WHILE, tknum-1, yylineno);
 				assert(head != NULL);
+				return WHILE;
 			}
 
 "for" 		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD FOR\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_FOR, tknum-1, yylineno);
 				assert(head != NULL);
+				return FOR;
 			}
 
 "function"	{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD FUNCTION\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_FUNCTION, tknum-1, yylineno);
 				assert(head != NULL);
+				return FUNCTION;
 			}
 
 "return"	{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD RETURN\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_RETURN, tknum-1, yylineno);
 				assert(head != NULL);
+				return RETURN;
 			}
 
 "break" 	{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD BREAK\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_BREAK, tknum-1, yylineno);
 				assert(head != NULL);
+				return BREAK;
 			}
 
 "continue"	{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD CONTINUE\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_CONTINUE, tknum-1, yylineno);
 				assert(head != NULL);
+				return CONTINUE;
 			}
 
 "and" 		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD AND\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_AND, tknum-1, yylineno);
 				assert(head != NULL);
+				return AND;
 			}
 
 "not" 		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD NOT\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_NOT, tknum-1, yylineno);
 				assert(head != NULL);
+				return NOT;
 			}
 
 "or"		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD OR\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_OR, tknum-1, yylineno);
 				assert(head != NULL);
+				return OR;
 			}
 
 "local" 	{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD LOCAL\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_LOCAL, tknum-1, yylineno);
 				assert(head != NULL);
+				return LOCAL;
 			}
 
 "true" 		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD TRUE\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_TRUE, tknum-1, yylineno);
 				assert(head != NULL);
+				return TRUE;
 			}
 
 "false" 	{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD FALSE\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_FALSE, tknum-1, yylineno);
 				assert(head != NULL);
+				return FALSE;
 			}
 
 "nil"		{
 				fprintf(out, "%d: #%d \"%s\" KEYWORD NIL\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_NIL, tknum-1, yylineno);
 				assert(head != NULL);
+				return NIL;
 			}
 
 " "			{ ; }
@@ -265,175 +281,204 @@ lineCom		\/\/.*
 				fprintf(out, "%d: #%d \"%s\" OPERATOR ASSIGN\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_ASSIGN, tknum-1, yylineno);
 				assert(head != NULL);
+				return ASSIGN;
 			}
 
 "+" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR UNARY_PLUS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_UNARY_PLUS, tknum-1, yylineno);
 				assert(head != NULL);
+				return PLUS;
 			}
 
 "-" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR UNARY_MINUS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_UNARY_MINUS, tknum-1, yylineno);
 				assert(head != NULL);
+				return MINUS;
 			}
 
 "*" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR MULTIPLIES\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_MULTIPLIES, tknum-1, yylineno);
 				assert(head != NULL);
+				return MULTIPLIES;
 			}
 
 "/" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR DIVIDES\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_DIVIDES, tknum-1, yylineno);
 				assert(head != NULL);
+				return DIVIDES;
 			}
 
 "%" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR MODULUS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_MODULUS, tknum-1, yylineno);
 				assert(head != NULL);
+				return MODULUS;
 			}
 
 "==" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR EQUAL\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_EQUAL, tknum-1, yylineno);
 				assert(head != NULL);
+				return EQUAL;
 			}
 
 "!=" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR INEQUAL\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_INEQUAL, tknum-1, yylineno);
 				assert(head != NULL);
+				return INEQUAL;
 			}
 
 "++" 		{	
 				fprintf(out, "%d: #%d \"%s\" OPERATOR INCREMENT\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_INCREMENT, tknum-1, yylineno);
 				assert(head != NULL);
+				return INCREMENT;
 			}
 
 "--"		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR DECREMENT\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_DECREMENT, tknum-1, yylineno);
 				assert(head != NULL);
+				return DECREMENT;
 			}
 
 ">" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR GREATER\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_GREATER, tknum-1, yylineno);
 				assert(head != NULL);
+				return GREATER;
 			}
 
 "<" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR LESS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_LESS, tknum-1, yylineno);
 				assert(head != NULL);
+				return LESS;
 			}
 
 ">=" 		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR GREATER_EQUAL\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_GREATER_EQUAL, tknum-1, yylineno);
 				assert(head != NULL);
+				return GREATER_EQUAL;
 			}
 
 "<="		{
 				fprintf(out, "%d: #%d \"%s\" OPERATOR LESS_EQUAL\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_LESS_EQUAL, tknum-1, yylineno);
 				assert(head != NULL);
+				return LESS_EQUAL;
 			}
 
 "{" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_BRACES\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_LEFT_BRACES, tknum-1, yylineno);
 				assert(head != NULL);
+				return LEFT_BRACES;
 			}
 
 "}" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_BRACES\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_RIGHT_BRACES, tknum-1, yylineno);
 				assert(head != NULL);
+				return RIGHT_BRACES;
 			}
 
 "[" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_BRACKETS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_LEFT_BRACKETS, tknum-1, yylineno);
 				assert(head != NULL);
+				return LEFT_BRACKETS;
 			}
 
 "]" 		{	
 				fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_BRACKETS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_RIGHT_BRACKETS, tknum-1, yylineno);
 				assert(head != NULL);
+				return RIGHT_BRACKETS;
 			}
 
 "(" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER LEFT_PARENTHESIS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_LEFT_PARENTHESIS, tknum-1, yylineno);
 				assert(head != NULL);
+				return LEFT_PARENTHESIS;
 			}
 
 ")" 		{	
 				fprintf(out, "%d: #%d \"%s\" DELIMITER RIGHT_PARENTHESIS\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_RIGHT_PARENTHESIS, tknum-1, yylineno);
 				assert(head != NULL);
+				return RIGHT_PARENTHESIS;
+
 			}
 
 ";" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER SEMICOLON\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_SEMICOLON, tknum-1, yylineno);
 				assert(head != NULL);
+				return SEMICOLON;
 			}
 
 "," 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER COMMA\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_COMMA, tknum-1, yylineno);
 				assert(head != NULL);
+				return COMMA;
 			}
 
 ":" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER COLON\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_COLON, tknum-1, yylineno);
 				assert(head != NULL);
+				return COLON;
 			}
 
 "::" 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER DOUBLE_COLON\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_DOUBLE_COLON, tknum-1, yylineno);
 				assert(head != NULL);
+				return DOUBLE_COLON;
 			}
 
 {dot} 		{
 				fprintf(out, "%d: #%d \"%s\" DELIMITER DOT\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_DOT, tknum-1, yylineno);
 				assert(head != NULL);
+				return DOT;
 			}
 
 ".."		{	
 				fprintf(out, "%d: #%d \"%s\" DELIMITER DOUBLE_DOT\n", yylineno, tknum++, yytext);
 				add_value(&head, NULL, 0, 0, E_DOUBLE_DOT, tknum-1, yylineno);
 				assert(head != NULL);
+				return DOUBLE_DOT;
 			}
 
 {id}		{
 				fprintf(out, "%d: #%d \"%s\" ID\n", yylineno, tknum++, yytext);
 				add_value(&head, yytext, 0, 0, E_ID, tknum-1, yylineno);
 				assert(head != NULL);
+				return ID;
 			}
 
 {intconst}	{
 				fprintf(out, "%d: #%d \"%s\" INTCONST %d\n", yylineno, tknum++, yytext, atoi(yytext));
 				add_value(&head, NULL, atoi(yytext), 0, E_INTCONST, tknum-1, yylineno);
 				assert(head != NULL);
+				return INTCONST;
 			}
 
 {realconst} {
 				fprintf(out, "%d: #%d \"%s\" REALCONST %f\n", yylineno, tknum++, yytext, atof(yytext));
 				add_value(&head, NULL,0, atof(yytext), E_REALCONST, tknum-1, yylineno);
 				assert(head != NULL);
-			}
+				return REALCONST;			}
 
 {string} 	{
 				char* str = malloc(sizeof(char)*strlen(yytext));
@@ -471,13 +516,14 @@ lineCom		\/\/.*
 				fprintf(out,"%d: #%d \"%s\" STRING\n", yylineno, tknum++, str);
 				add_value(&head, str, 0, 0, E_INTCONST, tknum-1, yylineno);
 				assert(head != NULL);
+				return STRING;
 			}
 
 .			{fprintf(stderr, "%d: #%d \"%s\" UKNOWN TOKKEN\n", yylineno, tknum++, yytext);}
 
 %%
 
-
+/*
 int main(int argc, char** argv) {
 	alpha_token_t aayylval = NULL;
 	if (argc > 1) {
@@ -495,3 +541,4 @@ int main(int argc, char** argv) {
 	//print_tokkens(head);
 	return 0;
 } 
+*/
