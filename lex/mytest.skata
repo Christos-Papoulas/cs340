@@ -1,13 +1,22 @@
-read(a);
-a = input();
-function foo(x) {
-	local skata = “hello”;
-	print(x + y);
-	local hello = a;
-	local hello = 35;
-	function skataskata() {
-		print(::a + ::a);
-	}
-	function asdf(){}
+function foo(foo_x,foo_y){
+
+    for(i=0; i<5; i++){
+        x2=33;
+    }
+
+    function (x,w){
+        local x4 = 4;
+        if(x2==22){
+           break;
+        }
+        else if(x2==33){
+           x4=5;
+        }
+        else{
+           continue;
+        }
+    }
+
+    local_x2 = 1;
+    {}
 }
-function foo(){}

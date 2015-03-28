@@ -163,7 +163,7 @@ assignexpr: lvalue ASSIGN expr {
 					}
 				}
 
-				for (i=0; i<getScope(); i++) {
+				for (i=0; i<getScope() && $1; i++) {
 					SymbolTableEntry* tmp = lookUp(i,$1);
 					if ( tmp && tmp->type == E_USERFUNC) {
 						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1);
@@ -202,6 +202,7 @@ lvalue:		ID
 					if (!tmp) {
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					} else if (!tmp->isActive) {
+						
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					}
 				}
@@ -222,7 +223,7 @@ lvalue:		ID
 					fprintf (stderr, "Error at line %d: cannot redifine library function %s \n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
-				
+				$$ = strdup(yylval.stringValue);
 				fprintf(stderr, "lvalue -> LOCAL ID\n");
 			}
 			|DOUBLE_COLON ID 

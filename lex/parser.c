@@ -1778,7 +1778,7 @@ yyreduce:
 					}
 				}
 
-				for (i=0; i<getScope(); i++) {
+				for (i=0; i<getScope() && (yyvsp[-2].stringValue); i++) {
 					SymbolTableEntry* tmp = lookUp(i,(yyvsp[-2].stringValue));
 					if ( tmp && tmp->type == E_USERFUNC) {
 						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, (yyvsp[-2].stringValue));
@@ -1864,7 +1864,7 @@ yyreduce:
 					fprintf (stderr, "Error at line %d: cannot redifine library function %s \n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
-				
+				(yyval.stringValue) = strdup(yylval.stringValue);
 				fprintf(stderr, "lvalue -> LOCAL ID\n");
 			}
 #line 1871 "parser.c" /* yacc.c:1646  */
