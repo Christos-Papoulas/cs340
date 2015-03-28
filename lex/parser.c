@@ -541,12 +541,12 @@ static const yytype_uint16 yyrline[] =
      104,   105,   106,   107,   108,   109,   112,   113,   114,   115,
      116,   117,   118,   119,   120,   121,   122,   123,   124,   125,
      126,   129,   130,   131,   132,   133,   134,   135,   136,   152,
-     178,   183,   184,   185,   186,   193,   202,   214,   223,   226,
-     227,   228,   229,   232,   233,   234,   237,   238,   241,   244,
-     247,   248,   251,   252,   255,   256,   259,   262,   263,   266,
-     270,   269,   282,   299,   281,   300,   300,   303,   311,   312,
-     313,   314,   315,   319,   318,   325,   329,   328,   333,   336,
-     339,   340,   343,   346,   349,   350
+     173,   180,   181,   182,   183,   190,   204,   220,   230,   233,
+     234,   235,   236,   239,   240,   241,   244,   245,   248,   251,
+     254,   255,   258,   259,   262,   263,   266,   269,   270,   273,
+     277,   276,   289,   306,   288,   307,   307,   310,   318,   319,
+     320,   321,   322,   326,   325,   332,   336,   335,   340,   343,
+     346,   347,   350,   353,   356,   357
 };
 #endif
 
@@ -1781,84 +1781,90 @@ yyreduce:
 					exit(-1);
 				}
 
+				free((yyvsp[-2].stringValue));
+				(yyvsp[-2].stringValue) = NULL;
+			}
+#line 1788 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 174 "parser.y" /* yacc.c:1646  */
+    {
+				fprintf(stderr, "primary -> lvalue\n");
+				if((yyvsp[0].stringValue)) {		
+					(yyval.stringValue) = strdup((yyvsp[0].stringValue));
+				}
+			}
+#line 1799 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 41:
+#line 180 "parser.y" /* yacc.c:1646  */
+    {fprintf(stderr, "primary -> call\n");}
+#line 1805 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 181 "parser.y" /* yacc.c:1646  */
+    {fprintf(stderr, "primary -> objectdef\n");}
+#line 1811 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 182 "parser.y" /* yacc.c:1646  */
+    {fprintf(stderr, "primary -> (funcdef)\n");}
+#line 1817 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 184 "parser.y" /* yacc.c:1646  */
+    {
+				fprintf(stderr, "primary -> const\n");
+				(yyval.stringValue) = NULL;
+			}
+#line 1826 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 45:
+#line 191 "parser.y" /* yacc.c:1646  */
+    {
+				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
+
+				(yyval.stringValue) = strdup(yylval.stringValue);
+
 				if (!tmp) {
 					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 				} else if (!tmp->isActive) {
 					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 				}
-				free((yyvsp[-2].stringValue));
-				(yyvsp[-2].stringValue) = NULL;
-			}
-#line 1793 "parser.c" /* yacc.c:1646  */
-    break;
-
-  case 40:
-#line 179 "parser.y" /* yacc.c:1646  */
-    {
-				fprintf(stderr, "primary -> lvalue\n");
-				(yyval.stringValue) = strdup((yyvsp[0].stringValue));
-			}
-#line 1802 "parser.c" /* yacc.c:1646  */
-    break;
-
-  case 41:
-#line 183 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "primary -> call\n");}
-#line 1808 "parser.c" /* yacc.c:1646  */
-    break;
-
-  case 42:
-#line 184 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "primary -> objectdef\n");}
-#line 1814 "parser.c" /* yacc.c:1646  */
-    break;
-
-  case 43:
-#line 185 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "primary -> (funcdef)\n");}
-#line 1820 "parser.c" /* yacc.c:1646  */
-    break;
-
-  case 44:
-#line 187 "parser.y" /* yacc.c:1646  */
-    {
-				fprintf(stderr, "primary -> const\n");
-				(yyval.stringValue) = NULL;
-			}
-#line 1829 "parser.c" /* yacc.c:1646  */
-    break;
-
-  case 45:
-#line 194 "parser.y" /* yacc.c:1646  */
-    {
-				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
-
-				(yyval.stringValue) = strdup(yylval.stringValue);
-				
 
 				fprintf(stderr, "lvalue -> ID %s \n", yylval.stringValue);
 			}
-#line 1842 "parser.c" /* yacc.c:1646  */
+#line 1844 "parser.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 203 "parser.y" /* yacc.c:1646  */
+#line 205 "parser.y" /* yacc.c:1646  */
     {
-				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
+				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
+				if (isLibraryFunction(yylval.stringValue) && getScope() != 0) {
+						fprintf (stderr, "Error at line %d: cannot overwrite libfunc: %s\n", yylineno, (yyvsp[-1].stringValue));
+						exit(-1);
+					}
 				if (!tmp) {
-					insert(getScope(), yylval.stringValue, yylineno, E_LOCAL);
-				}else if (tmp->type == E_LIBFUNC) {
+					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+				}else if (tmp->type == E_LIBFUNC && getScope() != 0) {
 					fprintf (stderr, "Error at line %d: cannot redifine library function %s \n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
 				
 				fprintf(stderr, "lvalue -> LOCAL ID\n");
 			}
-#line 1858 "parser.c" /* yacc.c:1646  */
+#line 1864 "parser.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 215 "parser.y" /* yacc.c:1646  */
+#line 221 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(0,yylval.stringValue);
 				if (!tmp) {
@@ -1866,156 +1872,157 @@ yyreduce:
 					exit(-1);
 				}
 				fprintf(stderr, "lvalue -> ::ID\n");
+				(yyval.stringValue) = NULL;
 			}
-#line 1871 "parser.c" /* yacc.c:1646  */
+#line 1878 "parser.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 223 "parser.y" /* yacc.c:1646  */
+#line 230 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "lvalue -> member\n");}
-#line 1877 "parser.c" /* yacc.c:1646  */
+#line 1884 "parser.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 226 "parser.y" /* yacc.c:1646  */
+#line 233 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "member -> lvalue.id\n");}
-#line 1883 "parser.c" /* yacc.c:1646  */
+#line 1890 "parser.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 227 "parser.y" /* yacc.c:1646  */
+#line 234 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "member -> lvalue [expr]\n");}
-#line 1889 "parser.c" /* yacc.c:1646  */
+#line 1896 "parser.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 228 "parser.y" /* yacc.c:1646  */
+#line 235 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "member -> call.id\n");}
-#line 1895 "parser.c" /* yacc.c:1646  */
+#line 1902 "parser.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 229 "parser.y" /* yacc.c:1646  */
+#line 236 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "member -> call [expr]\n");}
-#line 1901 "parser.c" /* yacc.c:1646  */
+#line 1908 "parser.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 232 "parser.y" /* yacc.c:1646  */
+#line 239 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "call -> call (elist)\n");}
-#line 1907 "parser.c" /* yacc.c:1646  */
+#line 1914 "parser.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 233 "parser.y" /* yacc.c:1646  */
+#line 240 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "call -> lvalue callsuffix\n");}
-#line 1913 "parser.c" /* yacc.c:1646  */
+#line 1920 "parser.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 234 "parser.y" /* yacc.c:1646  */
+#line 241 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "call -> (functdef) (elist)\n");}
-#line 1919 "parser.c" /* yacc.c:1646  */
+#line 1926 "parser.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 237 "parser.y" /* yacc.c:1646  */
+#line 244 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "callsuffix -> normcall\n");}
-#line 1925 "parser.c" /* yacc.c:1646  */
+#line 1932 "parser.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 238 "parser.y" /* yacc.c:1646  */
+#line 245 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "callsuffix -> methodcall\n");}
-#line 1931 "parser.c" /* yacc.c:1646  */
+#line 1938 "parser.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 241 "parser.y" /* yacc.c:1646  */
+#line 248 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "normcall -> (elist)\n");}
-#line 1937 "parser.c" /* yacc.c:1646  */
+#line 1944 "parser.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 244 "parser.y" /* yacc.c:1646  */
+#line 251 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "methodcall -> ..id (elist)\n");}
-#line 1943 "parser.c" /* yacc.c:1646  */
+#line 1950 "parser.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 247 "parser.y" /* yacc.c:1646  */
+#line 254 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "elist -> expr elists\n");}
-#line 1949 "parser.c" /* yacc.c:1646  */
+#line 1956 "parser.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 251 "parser.y" /* yacc.c:1646  */
+#line 258 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "elists -> ,expr elists\n");}
-#line 1955 "parser.c" /* yacc.c:1646  */
+#line 1962 "parser.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 252 "parser.y" /* yacc.c:1646  */
+#line 259 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "elists -> empty\n");}
-#line 1961 "parser.c" /* yacc.c:1646  */
+#line 1968 "parser.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 255 "parser.y" /* yacc.c:1646  */
+#line 262 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "objectdef -> 	[elist]\n");}
-#line 1967 "parser.c" /* yacc.c:1646  */
+#line 1974 "parser.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 256 "parser.y" /* yacc.c:1646  */
+#line 263 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "objectdef -> [indexed]\n");}
-#line 1973 "parser.c" /* yacc.c:1646  */
+#line 1980 "parser.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 259 "parser.y" /* yacc.c:1646  */
+#line 266 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexed -> indexedelem\n");}
-#line 1979 "parser.c" /* yacc.c:1646  */
+#line 1986 "parser.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 262 "parser.y" /* yacc.c:1646  */
+#line 269 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexeds -> ,indexed\n");}
-#line 1985 "parser.c" /* yacc.c:1646  */
+#line 1992 "parser.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 263 "parser.y" /* yacc.c:1646  */
+#line 270 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexeds -> empty\n");}
-#line 1991 "parser.c" /* yacc.c:1646  */
+#line 1998 "parser.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 266 "parser.y" /* yacc.c:1646  */
+#line 273 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexdelem -> {expr : expr}\n");}
-#line 1997 "parser.c" /* yacc.c:1646  */
+#line 2004 "parser.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 270 "parser.y" /* yacc.c:1646  */
+#line 277 "parser.y" /* yacc.c:1646  */
     {
 				scopeUp();
 			}
-#line 2005 "parser.c" /* yacc.c:1646  */
+#line 2012 "parser.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 274 "parser.y" /* yacc.c:1646  */
+#line 281 "parser.y" /* yacc.c:1646  */
     {
 				deactivateScope (getScope());
 				scopeDown();
 				fprintf(stderr, "block -> [stmts] \n");
 			}
-#line 2015 "parser.c" /* yacc.c:1646  */
+#line 2022 "parser.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 282 "parser.y" /* yacc.c:1646  */
+#line 289 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
 				if (isLibraryFunction(yylval.stringValue)) {
@@ -2033,159 +2040,159 @@ yyreduce:
 				}
 
 			}
-#line 2037 "parser.c" /* yacc.c:1646  */
+#line 2044 "parser.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 299 "parser.y" /* yacc.c:1646  */
+#line 306 "parser.y" /* yacc.c:1646  */
     {scopeUp();}
-#line 2043 "parser.c" /* yacc.c:1646  */
+#line 2050 "parser.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 299 "parser.y" /* yacc.c:1646  */
+#line 306 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "funcdef -> function id (idlist) funcblock\n" );}
-#line 2049 "parser.c" /* yacc.c:1646  */
+#line 2056 "parser.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 300 "parser.y" /* yacc.c:1646  */
+#line 307 "parser.y" /* yacc.c:1646  */
     {scopeUp();}
-#line 2055 "parser.c" /* yacc.c:1646  */
+#line 2062 "parser.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 300 "parser.y" /* yacc.c:1646  */
+#line 307 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "block -> function (idlist) funcblock  \n");}
-#line 2061 "parser.c" /* yacc.c:1646  */
+#line 2068 "parser.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 304 "parser.y" /* yacc.c:1646  */
+#line 311 "parser.y" /* yacc.c:1646  */
     {
 				deactivateScope (getScope());
 				scopeDown();
 				fprintf(stderr, "funcblock -> [stmts] \n");
 			}
-#line 2071 "parser.c" /* yacc.c:1646  */
+#line 2078 "parser.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 311 "parser.y" /* yacc.c:1646  */
+#line 318 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "const -> intconst\n");}
-#line 2077 "parser.c" /* yacc.c:1646  */
+#line 2084 "parser.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 312 "parser.y" /* yacc.c:1646  */
+#line 319 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "const -> string\n");}
-#line 2083 "parser.c" /* yacc.c:1646  */
+#line 2090 "parser.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 313 "parser.y" /* yacc.c:1646  */
+#line 320 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "const -> nil\n");}
-#line 2089 "parser.c" /* yacc.c:1646  */
+#line 2096 "parser.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 314 "parser.y" /* yacc.c:1646  */
+#line 321 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "const -> true\n");}
-#line 2095 "parser.c" /* yacc.c:1646  */
+#line 2102 "parser.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 315 "parser.y" /* yacc.c:1646  */
+#line 322 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "const -> false\n");}
-#line 2101 "parser.c" /* yacc.c:1646  */
+#line 2108 "parser.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 319 "parser.y" /* yacc.c:1646  */
+#line 326 "parser.y" /* yacc.c:1646  */
     {
 				insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
 			}
-#line 2109 "parser.c" /* yacc.c:1646  */
+#line 2116 "parser.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 322 "parser.y" /* yacc.c:1646  */
+#line 329 "parser.y" /* yacc.c:1646  */
     {
 				fprintf(stderr, "idlist -> ID ids\n"); 
 			}
-#line 2117 "parser.c" /* yacc.c:1646  */
+#line 2124 "parser.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 325 "parser.y" /* yacc.c:1646  */
+#line 332 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "idlist -> empty\n");}
-#line 2123 "parser.c" /* yacc.c:1646  */
+#line 2130 "parser.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 329 "parser.y" /* yacc.c:1646  */
+#line 336 "parser.y" /* yacc.c:1646  */
     {
 				insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
 			}
-#line 2131 "parser.c" /* yacc.c:1646  */
+#line 2138 "parser.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 332 "parser.y" /* yacc.c:1646  */
+#line 339 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ids -> COMMA ID ids\n");}
-#line 2137 "parser.c" /* yacc.c:1646  */
+#line 2144 "parser.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 333 "parser.y" /* yacc.c:1646  */
+#line 340 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ids -> empty\n");}
-#line 2143 "parser.c" /* yacc.c:1646  */
+#line 2150 "parser.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 336 "parser.y" /* yacc.c:1646  */
+#line 343 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ifstmt -> IF (expr) stmt elsestmt\n");}
-#line 2149 "parser.c" /* yacc.c:1646  */
+#line 2156 "parser.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 339 "parser.y" /* yacc.c:1646  */
+#line 346 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "elsestmt -> ELSE stmt\n");}
-#line 2155 "parser.c" /* yacc.c:1646  */
+#line 2162 "parser.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 340 "parser.y" /* yacc.c:1646  */
+#line 347 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "elsestmt -> empty\n");}
-#line 2161 "parser.c" /* yacc.c:1646  */
+#line 2168 "parser.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 343 "parser.y" /* yacc.c:1646  */
+#line 350 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "whilestmt -> WHILE (expr) stmt\n");}
-#line 2167 "parser.c" /* yacc.c:1646  */
+#line 2174 "parser.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 346 "parser.y" /* yacc.c:1646  */
+#line 353 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "forstmt -> FOR (elist; expr; elist) stmt\n");}
-#line 2173 "parser.c" /* yacc.c:1646  */
+#line 2180 "parser.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 349 "parser.y" /* yacc.c:1646  */
+#line 356 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "returnstmt -> return expr;\n");}
-#line 2179 "parser.c" /* yacc.c:1646  */
+#line 2186 "parser.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 350 "parser.y" /* yacc.c:1646  */
+#line 357 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "returnstmt -> return; \n");}
-#line 2185 "parser.c" /* yacc.c:1646  */
+#line 2192 "parser.c" /* yacc.c:1646  */
     break;
 
 
-#line 2189 "parser.c" /* yacc.c:1646  */
+#line 2196 "parser.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2413,7 +2420,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 352 "parser.y" /* yacc.c:1906  */
+#line 359 "parser.y" /* yacc.c:1906  */
 
 
 int yyerror (char* yaccProvidedMessage) {

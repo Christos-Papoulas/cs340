@@ -1,4 +1,9 @@
-local a;
-{
-	x= ::a;
-}
+  
+  local a;
+  function f(x) {
+  	local a;
+  	x = a;
+  }
+
+  a = 3;
+ 

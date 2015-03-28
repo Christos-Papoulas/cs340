@@ -165,11 +165,6 @@ assignexpr: lvalue ASSIGN expr {
 					exit(-1);
 				}
 
-				if (!tmp) {
-					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
-				} else if (!tmp->isActive) {
-					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
-				}
 				free($1);
 				$1 = NULL;
 			}
@@ -178,7 +173,9 @@ assignexpr: lvalue ASSIGN expr {
 primary:	lvalue 
 			{
 				fprintf(stderr, "primary -> lvalue\n");
-				$$ = strdup($1);
+				if($1) {		
+					$$ = strdup($1);
+				}
 			}
 			|call {fprintf(stderr, "primary -> call\n");}
 			|objectdef {fprintf(stderr, "primary -> objectdef\n");}
@@ -195,16 +192,25 @@ lvalue:		ID
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
 
 				$$ = strdup(yylval.stringValue);
-				
+
+				if (!tmp) {
+					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+				} else if (!tmp->isActive) {
+					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+				}
 
 				fprintf(stderr, "lvalue -> ID %s \n", yylval.stringValue);
 			}
 			|LOCAL ID 
 			{
-				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
+				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
+				if (isLibraryFunction(yylval.stringValue) && getScope() != 0) {
+						fprintf (stderr, "Error at line %d: cannot overwrite libfunc: %s\n", yylineno, $1);
+						exit(-1);
+					}
 				if (!tmp) {
-					insert(getScope(), yylval.stringValue, yylineno, E_LOCAL);
-				}else if (tmp->type == E_LIBFUNC) {
+					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+				}else if (tmp->type == E_LIBFUNC && getScope() != 0) {
 					fprintf (stderr, "Error at line %d: cannot redifine library function %s \n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
@@ -219,6 +225,7 @@ lvalue:		ID
 					exit(-1);
 				}
 				fprintf(stderr, "lvalue -> ::ID\n");
+				$$ = NULL;
 			}
 			|member {fprintf(stderr, "lvalue -> member\n");}
 			;
