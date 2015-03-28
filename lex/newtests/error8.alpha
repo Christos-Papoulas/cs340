@@ -1,0 +1,7 @@
+/* error giati print kai input einai lib funcs */
+
+
+function foo(print,input){
+   print(geia);
+}
+

@@ -1,0 +1,14 @@
+
+x=print;
+print;
+x();
+y();
+
+pinakas.i = x();
+
+pinakas.i();
+
+{
+        pinakas[[[i]]]=3;
+}
+

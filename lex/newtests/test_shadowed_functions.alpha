@@ -1,0 +1,20 @@
+/* 5 x se ka8e scope, 3 foo se scope 0,1,2, 1 foo1 sto scope 3 */
+
+function foo(x){
+
+   function foo(x){
+
+      function foo(x){
+
+         function foo1(x){
+            x=4;
+         }
+
+         local x = 6;
+      }
+   }
+}
+
+foo(x);
+foo1 = 9;
+

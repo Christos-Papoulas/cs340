@@ -1,0 +1,25 @@
+/* xrhsimopoioyme mia global metablhth xwris na yparxei sto global scope */
+/* elegxoyme to shoddwed ths function apo mia local metablhth */
+
+if(x=1){
+        ::Global = 7;
+}
+
+function f(){
+        local f=10;
+        function g(){
+                f=5;
+                return f();
+        }
+}
+
+function F(){
+        local F=10;
+        function G(){
+                function H(){
+                        G();
+                        return ::F();
+                }
+        }
+}
+

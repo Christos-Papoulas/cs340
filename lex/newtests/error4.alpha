@@ -1,0 +1,9 @@
+/* l-value synarthsh mesa se allh synarthsh */
+
+function g(x, y){
+
+   function foo(x, h){
+      g=5;
+   }
+}
+

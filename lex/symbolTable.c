@@ -45,11 +45,17 @@ void init() {
 
 
 unsigned long hash(const char *str) {
-    unsigned long hash = 5381;
-    int c;
-    while (c = *str++)
-        hash = ((hash << 5) + hash) + c;
-
+	size_t len = strlen(str);
+   unsigned long hash, i;
+    for(hash = i = 0; i < len; ++i)
+    {
+        hash += str[i];
+        hash += (hash << 10);
+        hash ^= (hash >> 6);
+    }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
     return hash;
 }
 
@@ -58,7 +64,7 @@ unsigned long hashFunction(const char *str) {
 }
 
 
-void insertToHashTable(SymbolTableList* h, int scope, const char* name, enum SymbolTableType t, int line) {
+SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* name, enum SymbolTableType t, int line) {
 	int key = hashFunction(name);
 	SymbolTableEntry* tmp;
 	if(!h->st[key]->hasData) {
@@ -83,7 +89,7 @@ void insertToHashTable(SymbolTableList* h, int scope, const char* name, enum Sym
 			default: 
 				assert(0);
 		}
-		return ;
+		return h->st[key];
 	}
 
 	// collision!
@@ -111,12 +117,12 @@ void insertToHashTable(SymbolTableList* h, int scope, const char* name, enum Sym
 				default: 
 					assert(0);
 			}
-			return ;
+			return tmp;
 		}
 	}
 }
 
-void insertTo(int scope, const char* name, enum SymbolTableType t, int line) {
+SymbolTableEntry* insertTo(int scope, const char* name, enum SymbolTableType t, int line) {
 	assert (stl != NULL);
 	SymbolTableList* l_tmp;
 	int s, i;
@@ -139,11 +145,11 @@ void insertTo(int scope, const char* name, enum SymbolTableType t, int line) {
 		}
 	}
 
-	insertToHashTable(l_tmp, scope, name, t, line);
+	return insertToHashTable(l_tmp, scope, name, t, line);
 }
 
-void insert(int scope, const char* name, int line, enum SymbolTableType t) {
-	insertTo(scope, name, t, line);
+SymbolTableEntry* insert(int scope, const char* name, int line, enum SymbolTableType t) {
+	return insertTo(scope, name, t, line);
 }
 
 void printSymbolTable() {

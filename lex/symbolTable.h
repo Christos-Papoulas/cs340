@@ -7,12 +7,14 @@ typedef struct Variable {
 	unsigned int line;
 } Variable;
 
+
+
 typedef struct Function {
 	const char *name;
-	//List of arguments
 	unsigned int scope;
 	unsigned int line;
 } Function;
+
 
 enum SymbolTableType {
 	E_GLOBAL,  
@@ -43,9 +45,9 @@ void init();
 
 unsigned long hashFunction(const char *str);
 
-void insertTo(int scope, const char* name, enum SymbolTableType t, int line);
+SymbolTableEntry*  insertTo(int scope, const char* name, enum SymbolTableType t, int line);
 
-void insert(int scope, const char* name, int line, enum SymbolTableType t);
+SymbolTableEntry*  insert(int scope, const char* name, int line, enum SymbolTableType t);
 
 void printSymbolTable();
 

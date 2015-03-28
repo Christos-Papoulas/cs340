@@ -1,0 +1,31 @@
+//global_var insert sto ST, scope 0;
+global_var = 0;
+
+
+//global function foo (scope 0)
+function foo(){
+        //insetr sto ST, x scope 1;
+        local x = 1;
+
+        //insert sti ST, foo1 (scope 1)
+        //insert sti ST, argument y scope 2
+        //insert sti ST, argument z scope 2
+        function foo1 (y, z){
+                //global_var scope 2
+                local global_var = 1;
+        }
+}
+
+if(global_var == true)
+        y = 2;  //y insert sto ST, scope 0
+
+if (global_var != true) {
+        y = 3;  //y scope 0
+        x = 1;  //x insert sto ST, scope 1;
+}
+
+//object insert sto ST, scope 0
+//z insert sto ST, scope 0
+//y insert sto ST, scope 0
+object = [{"x" : z = 1}, {"y" : r = 1}];
+

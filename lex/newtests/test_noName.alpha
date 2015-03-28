@@ -1,0 +1,16 @@
+/* treis swstes noName functions kai mia akoma sto idio scope */
+
+function (x){
+   x = 5;
+   function (){
+      noName2 = 0;
+      function (){
+         noName3 = 1;
+      }
+   }
+}
+
+function (x){
+   noName4=4;
+}
+

@@ -1,0 +1,10 @@
+/* error giati x no visible sthn no_name function kai epeidh h x sto scope
+   1 einai active
+ */
+function foo(x){
+
+   function (){
+      x=6;
+   }
+}
+

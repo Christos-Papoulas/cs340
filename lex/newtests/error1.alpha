@@ -1,0 +1,8 @@
+/* error declaration thn func foo san metablhth */
+
+function foo(){
+   x=0;
+}
+
+foo = 4;
+

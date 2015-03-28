@@ -1,0 +1,60 @@
+function f1(x)
+{
+	return 100 + x;
+}
+
+{
+	function f1(x)
+	{
+		if(x <= 5)
+			return "less than 5";
+		else
+			return "greater than 5";
+	}
+
+	{
+		function f1()
+		{
+			return -100;
+		}
+		
+		local x = (function () { return f1() + ::f1(1821); });
+	
+		for(i=0 ; i<20 ; i++)
+		{
+			if(i % 2 == 0)
+				print("is even ");
+			else
+				continue;
+
+			print(i,"\n");
+		}
+
+		print(x(), "\n");
+	}
+	
+	i = 0;
+	while(true)
+	{
+		
+		if(i < 10)
+		{
+			print("f1(",i,") = ",f1(i),"\n");
+			print("global f1(",i,") = ",::f1(i),"\n");
+		}
+		else
+			break;
+		
+		i++;
+	}
+}
+
+function f2(x,y)
+{
+	return x+y;
+}
+
+{
+	// oi 2 teleytaies parametroi agnoountai
+	print(f2(1,2,3,4));
+}

@@ -144,14 +144,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 16 "parser.y" /* yacc.c:1909  */
+#line 18 "parser.y" /* yacc.c:1909  */
 
-		char*			stringValue;
-		int				intValue;
-		double			realValue;
-	
+	char*			stringValue;
+	int				intValue;
+	double		realValue;
 
-#line 155 "parser.h" /* yacc.c:1909  */
+#line 154 "parser.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

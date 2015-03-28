@@ -1,0 +1,6 @@
+/* declaration thn lib func print */
+
+function print(x, t, y){
+   local local_x;
+}
+

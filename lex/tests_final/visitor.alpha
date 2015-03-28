@@ -1,0 +1,71 @@
+
+function PrintVisitor() {
+	return [
+		{ "VisitBook" :
+			(function(book) {
+				print("Book Title: ", book.title, "\n");
+				//print("book\n");
+			}) },
+		{ "VisitSection" :
+			(function(section) {
+				print("\tSection :", section.title, "\n");
+				//print("\tsection\n");
+			}) },
+		{ "VisitParagraph" :
+			(function(paragraph) {
+				print("\t\t", paragraph.content, "\n");
+				//print("\t\tparagraph\n");
+			}) }
+	];
+}
+
+function Book(title) {
+    return [
+		{ "title" : title },
+		{ "sections" : [] },
+
+        { "Accept" :
+        	(function(book, visitor) {
+        		visitor.VisitBook(book);
+        		
+        		for (i=0; i < tablelength(book.sections); ++i)
+        			book.sections[i].Accept(book.sections[i], visitor);
+        	}) }
+    ];
+}
+
+function Section(title) {
+    return [
+        { "title" : title },
+        { "paragraphs" : [] },
+
+        { "Accept" :
+        	(function(section, visitor) {
+        		visitor.VisitSection(section);
+
+        		for (i=0; i < tablelength(section.paragraphs); ++i)
+        			section.paragraphs[i].Accept(section.paragraphs[i], visitor);
+        	}) }
+    ];
+}
+
+function Paragraph(text) {
+    return [
+        { "content" : text },
+
+        { "Accept" :
+        	(function(paragraph, visitor) {
+        		visitor.VisitParagraph(paragraph);
+        	}) }
+    ];
+}
+
+book = Book("Hitchhicker's Guide to the Galaxy");
+book.sections[0] = Section("Section #1");
+book.sections[1] = Section("Section #2");
+book.sections[2] = Section("Section #3");
+
+book.sections[0].paragraphs[0] = Paragraph("paragraph 1");
+book.sections[0].paragraphs[1] = Paragraph("paragraph 2");
+
+book.Accept(book, PrintVisitor());

@@ -1,0 +1,10 @@
+/* prwto print swsto giati anaferetai sthn lib func print, deytero la8os
+   giati paei na kanei shadow thn lib func se metablhth
+ */
+
+local print;
+
+{
+   local print;
+}
+

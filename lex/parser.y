@@ -3,6 +3,7 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include "symbolTable.h"
+	#include <assert.h>
 	int yyerror (char* yaccProvidedMessage);
 	int alpha_yylex ();
 
@@ -11,14 +12,14 @@
 	extern FILE* yyin;
 	extern FILE* out;
 
+
 %}
 
 %union {
-		char*			stringValue;
-		int				intValue;
-		double			realValue;
-	}
-
+	char*			stringValue;
+	int				intValue;
+	double		realValue;
+}
 
 %start program
 
@@ -73,6 +74,7 @@
 
 %type <stringValue> lvalue
 %type <stringValue> primary
+
 
 %left LEFT_PARENTHESIS RIGHT_PARENTHESIS
 %left LEFT_BRACKETS RIGHT_BRACKETS
@@ -136,21 +138,22 @@ term: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {fprintf(stderr, "term -> (expr)\n
 			|primary 
 			{
 				fprintf(stderr, "term -> primary\n");
-				if($1){
-					SymbolTableEntry* tmp = lookUp(getScope(),$1);
-					printf("%s: eimai stin primary\n", $1);
-					if(!tmp || !tmp->isActive) {
-						fprintf (stderr, "Error at line %d: undefine var: %s\n", yylineno, $1);
-						exit(-1);
-					} 
-					free($1);
-					$1 = NULL;
-				}
+				// if($1){
+				// 	SymbolTableEntry* tmp = lookUp(getScope(),$1);
+				// 	printf("%s: eimai stin primary\n", $1);
+				// 	if(!tmp || !tmp->isActive) {
+				// 		fprintf (stderr, "Error at line %d: undefine var: %s\n", yylineno, $1);
+				// 		exit(-1);
+				// 	} 
+				// 	free($1);
+				// 	$1 = NULL;
+				// }
 			}
 			;
 
 assignexpr: lvalue ASSIGN expr {
-				SymbolTableEntry* tmp = lookUp(getScope(),$1);
+				int i;
+				
 				fprintf(stderr, "assignexpr -> lvalue = expr\n");
 				
 				if ($1) {
@@ -160,9 +163,13 @@ assignexpr: lvalue ASSIGN expr {
 					}
 				}
 
-				if ( tmp && tmp->type == E_USERFUNC) {
-					fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1);
-					exit(-1);
+				for (i=0; i<getScope(); i++) {
+					SymbolTableEntry* tmp = lookUp(i,$1);
+					if ( tmp && tmp->type == E_USERFUNC) {
+						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1);
+						exit(-1);
+					}
+					
 				}
 
 				free($1);
@@ -190,14 +197,15 @@ primary:	lvalue
 lvalue:		ID 
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
-
 				$$ = strdup(yylval.stringValue);
-
-				if (!tmp) {
-					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
-				} else if (!tmp->isActive) {
-					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+				if (!isLibraryFunction(yylval.stringValue)) {
+					if (!tmp) {
+						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+					} else if (!tmp->isActive) {
+						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+					}
 				}
+
 
 				fprintf(stderr, "lvalue -> ID %s \n", yylval.stringValue);
 			}
@@ -205,9 +213,9 @@ lvalue:		ID
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
 				if (isLibraryFunction(yylval.stringValue) && getScope() != 0) {
-						fprintf (stderr, "Error at line %d: cannot overwrite libfunc: %s\n", yylineno, $1);
-						exit(-1);
-					}
+					fprintf (stderr, "Error at line %d: try to shadow libfunc: %s\n", yylineno, yylval.stringValue);
+					exit(-1);
+				}
 				if (!tmp) {
 					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 				}else if (tmp->type == E_LIBFUNC && getScope() != 0) {
@@ -285,7 +293,7 @@ block:		LEFT_BRACES
 			}
 			;
 
-funcdef:	FUNCTION ID 
+funcdef:	FUNCTION  ID 
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
 				if (isLibraryFunction(yylval.stringValue)) {
@@ -303,7 +311,10 @@ funcdef:	FUNCTION ID
 				}
 
 			} 
-			LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock {fprintf(stderr, "funcdef -> function id (idlist) funcblock\n" );}
+			LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock 
+			{
+				fprintf(stderr, "funcdef -> function id (idlist) funcblock\n" );
+			}
 			|FUNCTION LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock {fprintf(stderr, "block -> function (idlist) funcblock  \n");}
 			;
 
@@ -324,19 +335,41 @@ const: 		INTCONST {fprintf(stderr, "const -> intconst\n");}
 
 idlist:		ID 
 			{
-				insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
+				SymbolTableEntry* t = insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
+				if(isLibraryFunction(yylval.stringValue)){
+					fprintf (stderr, "Error at line %d: formal shadows libfunc: %s\n", yylineno, yylval.stringValue);
+					exit(-1);
+				}
 			} ids 
 			{
 				fprintf(stderr, "idlist -> ID ids\n"); 
+
 			}
-			|/*empty*/ {fprintf(stderr, "idlist -> empty\n");}
+			|/*empty*/ 
+			{
+
+				fprintf(stderr, "idlist -> empty\n");
+			}
 			;
 
 ids:		COMMA ID 
 			{
-				insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
+				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
+				if(isLibraryFunction(yylval.stringValue)){
+					fprintf (stderr, "Error at line %d: formal shadows libfunc: %s\n", yylineno, yylval.stringValue);
+					exit(-1);
+				}
+				if(tmp && tmp->isActive){
+					fprintf (stderr, "Error at line %d: formal redeclaration of var: %s\n", yylineno, yylval.stringValue);
+					exit(-1);
+				}
+				SymbolTableEntry* t = insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
+				assert(t);
 			}
-			ids {fprintf(stderr, "ids -> COMMA ID ids\n");}
+			ids
+			{
+				fprintf(stderr, "ids -> COMMA ID ids\n");
+			}
 			|/*empty*/ {fprintf(stderr, "ids -> empty\n");}
 			;
 

@@ -1,0 +1,42 @@
+/* edw exoyme
+ * diafora scope
+ * to x2 to opoio prepei na einai dyo fores sto ST sto scope 2
+ * no name function
+ * global
+*/
+
+Global=0;
+
+function foo(foo_x,foo_y){
+    ::Global=9;
+    local local_x2 = 2;
+    x2 = 22;
+
+    for(i=0; i<5; i++){
+        x2=33;
+    }
+
+    function (x,w){
+        local x4 = 4;
+        if(x2==22){
+           break;
+        }
+        else if(x2==33){
+           x4=5;
+        }
+        else{
+           continue;
+        }
+    }
+
+    local_x2 = ::Global;
+    {}
+}
+
+{
+    if(1){
+        x2=t;
+        ::Global=0;
+    }
+}
+

@@ -1,0 +1,88 @@
+t = [];
+c = 1;
+t[0] = "hello";
+t[1+c] = 5 + -2.24;
+t[3] = 2.24;
+t[(d = c)] = 4.829;
+
+function strange()
+{
+	if(::t[1])
+		return ::t[0];
+	else
+		return ::t[2] + ::t[3];	
+}
+
+{
+	// ::t[1] is true
+	print("if true then: ", strange(), "\n");
+
+	::t[1] = false;
+	print("if false then:  ", strange(), "\n");
+
+	// Swsta einai kai ta dyo. Eite merikh eite olikh apotimhsh.
+	function f()
+	{
+		print("Olikh apotimhsh");
+		return true;
+	}
+
+	{
+		x = 20;
+		print("x = ",x,"\n");
+		if(true OR f() OR ++x >= 20)
+			print("Merikh apotimhsh\n");
+
+		print("x = ",x,"\n");
+	}	
+}
+
+{
+	t1 = [1, -2, 3, c = -4 + 4, -9];
+
+	if(t1[3] == t1.c)
+		print("in_1");
+	else
+		print("out_1");
+/*
+	for(i=0 ; i<5 ; i++)
+	{	
+		if(t1[i] > 0)
+			print("Positive ");
+		else 
+		{	
+			if(t1[i] < 0)
+				continue;
+			else
+				print("Zero found\n");
+		}
+	
+		print(t1[i],"\n");
+	}
+*/}
+
+{
+	t2 = [{"start":11}, {"x1":10}, {"x2":10}, {"x3":14}, {"end":15}];
+	
+	// post-fixed or pre-fixed
+	p = ++t2.x1;
+	m = t2.x2++;
+	print("pro = ",p,"\n","met = ",m,"\n");
+
+    	indtable = [ "start", "x1", "x2", "end" ];
+
+	i = 0;
+	while(true)
+	{
+		if(i < 4)
+		{
+			::print("t2[",i,"] = ",t2[indtable[i]],"\n");
+		}
+		else
+			break;
+	
+		i++;
+	}
+
+	a = t2.x1 + t2.x2 * t2.x3;
+}

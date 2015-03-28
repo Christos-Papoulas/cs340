@@ -1,0 +1,8 @@
+/* error declaration metablhths x se function x */
+
+x = 7;
+
+function x(y,x){
+   return(y);
+}
+
