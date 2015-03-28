@@ -43,7 +43,7 @@
 %token <stringValue> TRUE 
 %token <stringValue> FALSE 
 %token <stringValue> NIL
-
+%expect 1
 %token <stringValue> ASSIGN 
 %token <stringValue> PLUS
 %token <stringValue> MINUS
@@ -202,7 +202,7 @@ lvalue:		ID
 					if (!tmp) {
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					} else if (!tmp->isActive) {
-						
+
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					}
 				}
@@ -374,12 +374,15 @@ ids:		COMMA ID
 			|/*empty*/ {fprintf(stderr, "ids -> empty\n");}
 			;
 
-ifstmt:		IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt elsestmt {fprintf(stderr, "ifstmt -> IF (expr) stmt elsestmt\n");}
+ifstmt:		ifprefix stmt 
+			| ifprefix stmt ELSE stmt{fprintf(stderr, "ifstmt -> IF (expr) stmt elsestmt\n");}
 			;
 
-elsestmt:	ELSE stmt {fprintf(stderr, "elsestmt -> ELSE stmt\n");}
-			|/*empty*/ {fprintf(stderr, "elsestmt -> empty\n");}
+ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 			;
+
+// elsestmt:	ELSE  {fprintf(stderr, "elsestmt -> ELSE stmt\n");}
+// 			;
 
 whilestmt:	WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {fprintf(stderr, "whilestmt -> WHILE (expr) stmt\n");}
 			;
