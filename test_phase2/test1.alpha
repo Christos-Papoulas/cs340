@@ -12,11 +12,11 @@ Global=0;
         ::Global=9;
         local local_x2 = 2;
         x2 = 22;
-        
+
         for(i=0; i<5; i++){
             x2=33;
         }
-
+        //f++;
         function (x,w){
             local x4 = 4;
             if(x==22){
@@ -29,7 +29,7 @@ Global=0;
                continue;
             }
         }
-        f++;
+        
         local_x2 = ::Global;
         {}
     }

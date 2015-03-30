@@ -136,20 +136,7 @@ term: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {fprintf(stderr, "term -> (expr)\n
 			|lvalue INCREMENT {fprintf(stderr, "term -> lvalue++\n");}
 			|DECREMENT lvalue {fprintf(stderr, "term -> --lvalue\n");}
 			|lvalue DECREMENT {fprintf(stderr, "term -> lvalue--\n");}
-			|primary 
-			{
-				fprintf(stderr, "term -> primary\n");
-				// if($1){
-				// 	SymbolTableEntry* tmp = lookUp(getScope(),$1);
-				// 	printf("%s: eimai stin primary\n", $1);
-				// 	if(!tmp || !tmp->isActive) {
-				// 		fprintf (stderr, "Error at line %d: undefine var: %s\n", yylineno, $1);
-				// 		exit(-1);
-				// 	} 
-				// 	free($1);
-				// 	$1 = NULL;
-				// }
-			}
+			|primary {fprintf(stderr, "term -> primary\n");}
 			;
 
 assignexpr: lvalue ASSIGN expr {
@@ -202,12 +189,12 @@ lvalue:		ID
 				int toBeInserted = 1;
 				int localvar = 0;
 
-				if (inFunction) {
+				if (top_e() != -1) {
 					SymbolTableEntry* lvar = lookUp(getScope(), yylval.stringValue);
 					if (lvar && lvar->isActive) {
 						localvar = 1;
 					}
-					for (i=1; i<inFunction; i++){ 
+					for (i=1; i<top_e(); i++){ 
 						SymbolTableEntry* tmp = lookUp(i, yylval.stringValue);
 						if (tmp && !localvar) {
 							fprintf(stderr, "Error at line %d: cannot access var: %s\n", yylineno, yylval.stringValue);
@@ -261,7 +248,10 @@ lvalue:		ID
 				fprintf(stderr, "lvalue -> ::ID\n");
 				$$ = NULL;
 			}
-			|member {fprintf(stderr, "lvalue -> member\n");}
+			|member {
+				fprintf(stderr, "lvalue -> member\n");
+				$$ = NULL;
+			}
 			;
 
 member:		lvalue DOT ID {fprintf(stderr, "member -> lvalue.id\n");}
@@ -341,18 +331,26 @@ funcdef:	FUNCTION  ID
 			{
 				fprintf(stderr, "funcdef -> function id (idlist) funcblock\n" );
 			}
-			|FUNCTION LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock {fprintf(stderr, "block -> function (idlist) funcblock  \n");}
+			|FUNCTION 
+			{
+				insert(getScope(), getAFunctionName(), yylineno, E_USERFUNC);
+			}
+			LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock 
+			{
+				
+				fprintf(stderr, "block -> function (idlist) funcblock  \n");
+			}
 			;
 
 funcblock: 	LEFT_BRACES 
 			{
-				inFunction = getScope();
+				push(getScope());
 			}
 			stmts RIGHT_BRACES 
 			{
 				deactivateScope (getScope());
 				scopeDown();
-				inFunction = 0;
+				pop();
 				fprintf(stderr, "funcblock -> [stmts] \n");
 			}
 			;

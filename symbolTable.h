@@ -70,5 +70,8 @@ void deactivateScope (int scope);
 
 void push(int data);
 int pop();
+int top_e();
 
+
+char* getAFunctionName();
 #endif

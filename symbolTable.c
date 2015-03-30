@@ -8,6 +8,7 @@
 
 int HASH_SIZE = 13;
 int scope = 0;
+size_t funcNum = 0;
 SymbolTableList* stl = NULL;
 
 
@@ -365,6 +366,24 @@ int pop()
     return scope;
 }	
 
-int tope() {
-    return top->scope;
+int top_e() {
+	if(top)
+    	return top->scope;
+
+	return -1;
+}
+
+int findn(size_t num) {
+    int n;
+    for(n = 0; num; n++, num /= 10)
+    	;
+    return n;
+}
+
+char* getAFunctionName() {
+	char* str = malloc(sizeof(char)*(3+findn(funcNum)));
+
+	sprintf(str, "_f%u\0", funcNum++);
+
+	return str;
 }
