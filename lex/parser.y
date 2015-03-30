@@ -6,13 +6,14 @@
 	#include <assert.h>
 	int yyerror (char* yaccProvidedMessage);
 	int alpha_yylex ();
+	int inFunction = 0;
 
 	extern int yylineno;
 	extern char* yytext;
 	extern FILE* yyin;
 	extern FILE* out;
 
-
+	extern struct node* top; // for functions!
 %}
 
 %union {
@@ -163,7 +164,7 @@ assignexpr: lvalue ASSIGN expr {
 					}
 				}
 
-				for (i=0; i<getScope() && $1; i++) {
+				for (i=0; i <= getScope() && $1; i++) {
 					SymbolTableEntry* tmp = lookUp(i,$1);
 					if ( tmp && tmp->type == E_USERFUNC) {
 						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1);
@@ -197,8 +198,32 @@ primary:	lvalue
 lvalue:		ID 
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
+				int i;
+				int toBeInserted = 1;
+				int localvar = 0;
+
+				if (inFunction) {
+					SymbolTableEntry* lvar = lookUp(getScope(), yylval.stringValue);
+					if (lvar && lvar->isActive) {
+						localvar = 1;
+					}
+					for (i=1; i<inFunction; i++){ 
+						SymbolTableEntry* tmp = lookUp(i, yylval.stringValue);
+						if (tmp && !localvar) {
+							fprintf(stderr, "Error at line %d: cannot access var: %s\n", yylineno, yylval.stringValue);
+							exit (-1);
+						}
+					}
+				}
+
+				for (i=0; i<=getScope(); i++) {
+					SymbolTableEntry* tmp1 = lookUp(i, yylval.stringValue);
+					if (tmp1 && tmp1->isActive && (tmp1->type==E_USERFUNC)) {
+						toBeInserted = 0;
+					}
+				}
 				$$ = strdup(yylval.stringValue);
-				if (!isLibraryFunction(yylval.stringValue)) {
+				if (!isLibraryFunction(yylval.stringValue) && toBeInserted) {
 					if (!tmp) {
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					} else if (!tmp->isActive) {
@@ -319,10 +344,15 @@ funcdef:	FUNCTION  ID
 			|FUNCTION LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock {fprintf(stderr, "block -> function (idlist) funcblock  \n");}
 			;
 
-funcblock: 	LEFT_BRACES stmts RIGHT_BRACES 
+funcblock: 	LEFT_BRACES 
+			{
+				inFunction = getScope();
+			}
+			stmts RIGHT_BRACES 
 			{
 				deactivateScope (getScope());
 				scopeDown();
+				inFunction = 0;
 				fprintf(stderr, "funcblock -> [stmts] \n");
 			}
 			;
@@ -346,11 +376,7 @@ idlist:		ID
 				fprintf(stderr, "idlist -> ID ids\n"); 
 
 			}
-			|/*empty*/ 
-			{
-
-				fprintf(stderr, "idlist -> empty\n");
-			}
+			|/*empty*/ {fprintf(stderr, "idlist -> empty\n");}
 			;
 
 ids:		COMMA ID 
@@ -374,15 +400,12 @@ ids:		COMMA ID
 			|/*empty*/ {fprintf(stderr, "ids -> empty\n");}
 			;
 
-ifstmt:		ifprefix stmt 
-			| ifprefix stmt ELSE stmt{fprintf(stderr, "ifstmt -> IF (expr) stmt elsestmt\n");}
+ifstmt:		ifprefix stmt {fprintf(stderr, "ifstmt -> ifprefix stmt\n");}
+			| ifprefix stmt ELSE stmt{fprintf(stderr, "ifstmt -> ifprefix stmt ELSE stmt\n");}
 			;
 
-ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
+ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{fprintf(stderr, "ifprefix -> IF (expr)\n");}
 			;
-
-// elsestmt:	ELSE  {fprintf(stderr, "elsestmt -> ELSE stmt\n");}
-// 			;
 
 whilestmt:	WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {fprintf(stderr, "whilestmt -> WHILE (expr) stmt\n");}
 			;

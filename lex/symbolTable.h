@@ -41,6 +41,13 @@ typedef struct SymbolTableList_s {
 	struct SymbolTableList_s* next;
 } SymbolTableList;
 
+//for functions hack <3
+struct node
+{
+    int scope;
+    struct node *ptr;
+};
+
 void init();
 
 unsigned long hashFunction(const char *str);
@@ -60,4 +67,8 @@ void scopeUp();
 void scopeDown();
 
 void deactivateScope (int scope);
+
+void push(int data);
+int pop();
+
 #endif

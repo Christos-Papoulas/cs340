@@ -10,6 +10,9 @@ int HASH_SIZE = 13;
 int scope = 0;
 SymbolTableList* stl = NULL;
 
+
+struct node* top = NULL; 
+
 const char* libfuncs_t[] = {
  "print",
  "input",
@@ -329,4 +332,39 @@ void deactivateScope (int scope) {
 			}
 		}
 	}
+}
+
+
+void push(int data) {
+    if (top == NULL) {
+        top =(struct node *)malloc(sizeof(struct node));
+        top->ptr = NULL;
+        top->scope = data;
+        return ;
+    } 
+
+    struct node *temp =(struct node *)malloc(sizeof(struct node));
+    temp->ptr = top;
+    temp->scope = data;
+    top = temp; 
+}
+
+/* Pop Operation on stack */
+int pop()
+{
+    struct node* top1 = top;
+ 	int scope = top1->scope;
+    if (top1 == NULL) {
+        top = NULL;
+        return -1;
+    } else
+        top1 = top1->ptr;
+    if(top) 
+    	free(top);
+    top = top1;
+    return scope;
+}	
+
+int tope() {
+    return top->scope;
 }

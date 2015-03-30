@@ -2,7 +2,7 @@
 /* elegxoyme to shoddwed ths function apo mia local metablhth */
 
 if(x=1){
-        ::Global = 7;
+        //::Global = 7;
 }
 
 function f(){
