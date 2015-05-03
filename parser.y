@@ -4,6 +4,8 @@
 	#include <string.h>
 	#include "symbolTable.h"
 	#include <assert.h>
+	#include "quads.h"
+	
 	int yyerror (char* yaccProvidedMessage);
 	int alpha_yylex ();
 	int inFunction = 0;
@@ -214,7 +216,6 @@ lvalue:		ID
 					if (!tmp) {
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					} else if (!tmp->isActive) {
-
 						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					}
 				}

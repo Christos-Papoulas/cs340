@@ -283,7 +283,6 @@ SymbolTableEntry* lookUp(int scope, char* name) {
 				break;
 			default: 
 				assert(0);
-
 		}
 	}
 	return NULL;
