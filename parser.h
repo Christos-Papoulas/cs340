@@ -149,8 +149,9 @@ union YYSTYPE
 	char*			stringValue;
 	int				intValue;
 	double		realValue;
+	struct expr* exprValue;
 
-#line 154 "parser.h" /* yacc.c:1909  */
+#line 155 "parser.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

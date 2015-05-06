@@ -5,7 +5,7 @@
 	#include "symbolTable.h"
 	#include <assert.h>
 	#include "quads.h"
-	
+
 	int yyerror (char* yaccProvidedMessage);
 	int alpha_yylex ();
 	int inFunction = 0;
@@ -22,6 +22,7 @@
 	char*			stringValue;
 	int				intValue;
 	double		realValue;
+	struct expr* exprValue;
 }
 
 %start program
@@ -75,21 +76,28 @@
 %token <stringValue> DOT 
 %token <stringValue> DOUBLE_DOT
 
-%type <stringValue> lvalue
-%type <stringValue> primary
+%type <exprValue> lvalue
+%type <exprValue> primary
+%type <exprValue> assignexpr
+%type <exprValue> expr
+%type <exprValue> member
+%type <exprValue> term
+%type <exprValue> const
+%type <exprValue> funcdef
+%type <exprValue> funcprefix
+%type <exprValue> funcname
 
-
-%left LEFT_PARENTHESIS RIGHT_PARENTHESIS
-%left LEFT_BRACKETS RIGHT_BRACKETS
-%left DOT DOUBLE_DOT 
-%right NOT INCREMENT DECREMENT
-%left MULTIPLIES DIVIDES MODULUS
-%left PLUS MINUS
-%nonassoc GREATER GREATER_EQUAL LESS LESS_EQUAL
-%nonassoc EQUAL INEQUAL
+%left ASSIGN
 %left AND
 %left OR
-%right ASSIGN
+%nonassoc EQUAL INEQUAL
+%nonassoc GREATER GREATER_EQUAL LESS LESS_EQUAL
+%left PLUS MINUS
+%left MULTIPLIES DIVIDES MODULUS
+%right NOT INCREMENT DECREMENT
+%left DOT DOUBLE_DOT 
+%left LEFT_BRACKETS RIGHT_BRACKETS
+%left LEFT_PARENTHESIS RIGHT_PARENTHESIS
 
 
 %%
@@ -114,21 +122,107 @@ stmt:		expr SEMICOLON {fprintf(stderr, "stmt -> expr ;\n");}
 			|SEMICOLON {fprintf(stderr, "stmt -> ;\n");}
 			;
 
-expr:	assignexpr {fprintf(stderr, "expr -> assignexpr\n");}
-			|expr PLUS expr {fprintf(stderr, "expr -> expr + expr\n");}
-			|expr MINUS expr {fprintf(stderr, "expr -> expr - expr\n");}
-			|expr MULTIPLIES expr {fprintf(stderr, "expr -> expr * expr\n");}
-			|expr DIVIDES expr {fprintf(stderr, "expr -> expr / expr\n");}
-			|expr MODULUS expr {fprintf(stderr, "expr -> expr mod expr\n");}
-			|expr GREATER expr {fprintf(stderr, "expr -> expr > expr\n");}
-			|expr GREATER_EQUAL expr {fprintf(stderr, "expr -> expr >= expr\n");}
-			|expr LESS expr {fprintf(stderr, "expr -> expr < expr\n");}
-			|expr LESS_EQUAL expr {fprintf(stderr, "expr -> expr <= expr\n");}
-			|expr EQUAL expr {fprintf(stderr, "expr -> expr == expr\n");}
-			|expr INEQUAL expr {fprintf(stderr, "expr -> expr != expr\n");}
+expr:		assignexpr {
+				$$ = $1;
+				fprintf(stderr, "expr -> assignexpr\n");
+			}
+			|expr PLUS expr {
+				$$ = newexpr(arithexpr_e);
+				$$->sym = newtemp();
+				emit(add, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr + expr\n");
+			}
+			|expr MINUS expr {
+				$$ = newexpr(arithexpr_e);
+				$$->sym = newtemp();
+				emit(sub, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr - expr\n");
+			}
+			|expr MULTIPLIES expr {
+				$$ = newexpr(arithexpr_e);
+				$$->sym = newtemp();
+				emit(mul, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr * expr\n");
+			}
+			|expr DIVIDES expr {
+				$$ = newexpr(arithexpr_e);
+				$$->sym = newtemp();
+				emit(divi, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr / expr\n");
+			}
+			|expr MODULUS expr {
+				$$ = newexpr(arithexpr_e);
+				$$->sym = newtemp();
+				emit(mod, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr mod expr\n");
+			}
+			|expr GREATER expr {
+				assert($1!=NULL && $2!=NULL);
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit (if_greater, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
+				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
+				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr > expr\n");
+			}
+			|expr GREATER_EQUAL expr {
+				assert($1!=NULL && $2!=NULL);
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit (if_greatereq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
+				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
+				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr >= expr\n");
+			}
+			|expr LESS expr {
+				assert($1!=NULL && $2!=NULL);
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit (if_less, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
+				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
+				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr < expr\n");}
+			|expr LESS_EQUAL expr {
+				assert($1!=NULL && $2!=NULL);
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit (if_lesseq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
+				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
+				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				
+				fprintf(stderr, "expr -> expr <= expr\n");
+			}
+			|expr EQUAL expr {
+				assert($1!=NULL && $2!=NULL);
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit (if_eq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
+				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
+				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				
+				fprintf(stderr, "expr -> expr == expr\n");
+			}
+			|expr INEQUAL expr {
+				assert($1!=NULL && $2!=NULL);
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit (if_noteq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
+				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
+				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				
+				fprintf(stderr, "expr -> expr != expr\n");}
 			|expr AND expr {fprintf(stderr, "expr -> expr AND expr\n");}
 			|expr OR expr {fprintf(stderr, "expr -> expr OR expr\n");}
-			|term {fprintf(stderr, "expr -> term\n");}
+			|term {
+				$$ = $1;
+				fprintf(stderr, "expr -> term\n");
+			}
 			;		
 			
 term: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {fprintf(stderr, "term -> (expr)\n");}
@@ -138,7 +232,10 @@ term: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {fprintf(stderr, "term -> (expr)\n
 			|lvalue INCREMENT {fprintf(stderr, "term -> lvalue++\n");}
 			|DECREMENT lvalue {fprintf(stderr, "term -> --lvalue\n");}
 			|lvalue DECREMENT {fprintf(stderr, "term -> lvalue--\n");}
-			|primary {fprintf(stderr, "term -> primary\n");}
+			|primary {
+				$$ = $1;
+				fprintf(stderr, "term -> primary\n");
+			}
 			;
 
 assignexpr: lvalue ASSIGN expr {
@@ -146,15 +243,15 @@ assignexpr: lvalue ASSIGN expr {
 				
 				fprintf(stderr, "assignexpr -> lvalue = expr\n");
 				
-				if ($1) {
-					if (isLibraryFunction($1)) {
-						fprintf (stderr, "Error at line %d: cannot overwrite libfunc: %s\n", yylineno, $1);
+				if ($1 && $1->sym->type == E_USERFUNC) {
+					if (isLibraryFunction($1->sym->value.funcVal.name)) {
+						fprintf (stderr, "Error at line %d: cannot overwrite libfunc: %s\n", yylineno, $1->sym->value.funcVal.name);
 						exit(-1);
 					}
 				}
 
 				for (i=0; i <= getScope() && $1; i++) {
-					SymbolTableEntry* tmp = lookUp(i,$1);
+					SymbolTableEntry* tmp = lookUp(i,$1->sym->value.varVal.name);
 					if ( tmp && tmp->type == E_USERFUNC) {
 						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1);
 						exit(-1);
@@ -162,17 +259,26 @@ assignexpr: lvalue ASSIGN expr {
 					
 				}
 
-				free($1);
-				$1 = NULL;
+				if ($1->type == tableitem_e) {
+					emit (tablesetelem, $1, $1->index, $3, 0, yylineno);
+					$$ = emit_iftableitem ($1);
+					$$->type = assignexpr_e;
+				} else {
+					emit (assign, $3, NULL, $1, 0, yylineno);
+					$$ = newexpr(assignexpr_e);
+					$$->sym = newtemp();
+					emit (assign, $1, NULL, $$, 0, yylineno);
+				}
+
+
 			}
 			;
 
 primary:	lvalue 
 			{
+				$$ = $1;
 				fprintf(stderr, "primary -> lvalue\n");
-				if($1) {		
-					$$ = strdup($1);
-				}
+				
 			}
 			|call {fprintf(stderr, "primary -> call\n");}
 			|objectdef {fprintf(stderr, "primary -> objectdef\n");}
@@ -180,13 +286,16 @@ primary:	lvalue
 			|const 
 			{
 				fprintf(stderr, "primary -> const\n");
-				$$ = NULL;
+				$$ = $1;
 			}
 			;
 
 lvalue:		ID 
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
+				
+				SymbolTableEntry* newvar = NULL;
+
 				int i;
 				int toBeInserted = 1;
 				int localvar = 0;
@@ -211,32 +320,43 @@ lvalue:		ID
 						toBeInserted = 0;
 					}
 				}
-				$$ = strdup(yylval.stringValue);
+				// $$ = strdup(yylval.stringValue);
 				if (!isLibraryFunction(yylval.stringValue) && toBeInserted) {
 					if (!tmp) {
-						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+						newvar = insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					} else if (!tmp->isActive) {
-						insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+						newvar = insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 					}
 				}
 
+				if (newvar) {
+					$$ = lvalue_expr(newvar);
+				} else 
+					$$ = lvalue_expr(tmp);
 
 				fprintf(stderr, "lvalue -> ID %s \n", yylval.stringValue);
 			}
 			|LOCAL ID 
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
+				SymbolTableEntry* newvar = NULL;
+
 				if (isLibraryFunction(yylval.stringValue) && getScope() != 0) {
 					fprintf (stderr, "Error at line %d: try to shadow libfunc: %s\n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
 				if (!tmp) {
-					insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
+					newvar = insert(getScope(), yylval.stringValue, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 				}else if (tmp->type == E_LIBFUNC && getScope() != 0) {
 					fprintf (stderr, "Error at line %d: cannot redifine library function %s \n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
-				$$ = strdup(yylval.stringValue);
+
+				if (newvar) {
+					$$ = lvalue_expr(newvar);
+				} else 
+					$$ = lvalue_expr(tmp);
+
 				fprintf(stderr, "lvalue -> LOCAL ID\n");
 			}
 			|DOUBLE_COLON ID 
@@ -247,16 +367,29 @@ lvalue:		ID
 					exit(-1);
 				}
 				fprintf(stderr, "lvalue -> ::ID\n");
-				$$ = NULL;
+				$$ = lvalue_expr(tmp);
 			}
 			|member {
 				fprintf(stderr, "lvalue -> member\n");
-				$$ = NULL;
+				$$ = $1;
 			}
 			;
 
-member:		lvalue DOT ID {fprintf(stderr, "member -> lvalue.id\n");}
-			|lvalue LEFT_BRACKETS expr RIGHT_BRACKETS {fprintf(stderr, "member -> lvalue [expr]\n");}
+member:		lvalue DOT ID {
+
+				$$ = member_item ($1, $3);
+
+				fprintf(stderr, "member -> lvalue.id\n");
+			}
+			|lvalue LEFT_BRACKETS expr RIGHT_BRACKETS 
+			{
+				expr* member = newexpr(tableitem_e);
+				$1->type = tableitem_e;
+				member->sym = emit_iftableitem($1)->sym;
+				member->index = $3;
+				$$ = member;
+				fprintf(stderr, "member -> lvalue [expr]\n");
+			}
 			|call DOT ID {fprintf(stderr, "member -> call.id\n");}
 			|call LEFT_BRACKETS expr RIGHT_BRACKETS {fprintf(stderr, "member -> call [expr]\n");}
 			;
@@ -310,38 +443,77 @@ block:		LEFT_BRACES
 			}
 			;
 
-funcdef:	FUNCTION  ID 
+funcdef:	funcprefix funcargs funcbody
+			{
+				exitscopespace();
+				//$1->totallocals = functionLocalOffset;
+				//functionLocalOffset = pop (functionLocalsStack);
+				$$ = $1;
+				emit (funcend, NULL, NULL, ($1), 0, yylineno);
+				fprintf(stderr, "funcdef -> funcprefix funcargs funcbody \n");
+			}
+			;
+
+funcargs:	LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS 
+			{
+				enterscopespace();
+				resetfunctionlocaloffset();
+				fprintf(stderr, "funcargs -> (idlist)\n");
+			}
+			;
+
+funcbody:	funcblock
+			{
+				exitscopespace();
+				fprintf(stderr, "funcbody -> funcblock\n");
+			}
+			;
+
+funcprefix: 	FUNCTION funcname {
+				$$ = $2;
+				$$->iaddress = nextquad();
+				emit(funcstart, NULL, NULL, $$, 0, yylineno);
+				//push(functionLocalsStack, functionLocalOffset);
+				enterscopespace();
+				resetformalargsoffset();
+				fprintf(stderr, "funcprefix -> FUNCTION funcname\n");
+			}
+			;
+
+funcname:	ID 
 			{
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
+				SymbolTableEntry* new = NULL;
 				if (isLibraryFunction(yylval.stringValue)) {
 					fprintf (stderr, "Error at line %d: cannot overwrite libfunc: %s\n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
 				if (!tmp) {
-					insert(getScope(), yylval.stringValue, yylineno, E_USERFUNC);
+					new = insert(getScope(), yylval.stringValue, yylineno, E_USERFUNC);
 				} else if (!tmp->isActive) {
-					insert(getScope(), yylval.stringValue, yylineno, E_USERFUNC);
+					new = insert(getScope(), yylval.stringValue, yylineno, E_USERFUNC);
 				} else {
 
 					fprintf (stderr, "Error at line %d: cannot redifine var: %s\n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
+				assert (new);
+				$$ = newexpr(programfunc_e);
+				$$->sym = new;
+				
+				fprintf(stderr, "funcname -> ID \n");
 
 			} 
-			LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock 
+			|/*empty*/
 			{
-				fprintf(stderr, "funcdef -> function id (idlist) funcblock\n" );
-			}
-			|FUNCTION 
-			{
-				insert(getScope(), getAFunctionName(), yylineno, E_USERFUNC);
-			}
-			LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS funcblock 
-			{
-				
-				fprintf(stderr, "block -> function (idlist) funcblock  \n");
+				$$ = newexpr(programfunc_e);
+				$$->sym = insert(getScope(), getAFunctionName(), yylineno, E_USERFUNC);
+
+				fprintf(stderr, "funcname -> empty \n");
+
 			}
 			;
+
 
 funcblock: 	LEFT_BRACES 
 			{
@@ -356,11 +528,26 @@ funcblock: 	LEFT_BRACES
 			}
 			;
 
-const: 		INTCONST {fprintf(stderr, "const -> intconst\n");}
-			|STRING {fprintf(stderr, "const -> string\n");}
-			|NIL {fprintf(stderr, "const -> nil\n");}
-			|TRUE {fprintf(stderr, "const -> true\n");}
-			|FALSE {fprintf(stderr, "const -> false\n");}
+const: 		INTCONST {
+				$$ = newexpr_constnum(yytext);
+				fprintf(stderr, "const -> intconst\n");
+			}
+			|STRING {
+				$$ = newexpr_conststring(yytext);
+				fprintf(stderr, "const -> string\n");
+			}
+			|NIL {
+				$$ = newexpr_constnil ();
+				fprintf(stderr, "const -> nil\n");
+			}
+			|TRUE {
+				$$ = newexpr_constbool (1);
+				fprintf(stderr, "const -> true\n");
+			}
+			|FALSE {
+				$$ = newexpr_constbool (0);
+				fprintf(stderr, "const -> false\n");
+			}
 			;
 
 idlist:		ID 
@@ -436,5 +623,6 @@ int main (int argc, char** argv) {
 	init();
 	yyparse();
 	printSymbolTable();
+	printTheQuadsMyLove();
 	return 0;
 }
