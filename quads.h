@@ -20,13 +20,13 @@ typedef enum iopcode {
 	not, if_eq, if_noteq, 
 	if_lesseq, if_greatereq, if_less,
 	if_greater, call, param,
-	ret, getretal, funcstart, 
+	ret, getretval, funcstart, 
 	funcend, tablecreate, 
 	tablegetelem, tablesetelem, jump
 } iopcode;
 
 typedef enum expr_t {
-	var_e,
+	var_e = 0,
 	tableitem_e,
 
 	programfunc_e,
@@ -88,6 +88,13 @@ typedef struct symbol {
 	unsigned line;
 } symbol;
 
+typedef struct func_t_s {
+	expr* expr;
+	int method;
+	char* name;
+	struct func_t_s* next;
+} func_t;
+
 expr* lvalue_expr (SymbolTableEntry* sym);
 expr* newexpr (expr_t t);
 expr* newexpr_conststring (char* s);
@@ -113,7 +120,15 @@ void patchlabel (int quadNo, int label);
 void emit (iopcode op, expr* arg1, expr* arg2, expr* result, unsigned label, unsigned line);
 int nextquad ();
 
+expr* make_call(expr* , func_t* );
+func_t* add_front(func_t* , expr* );
+void checkuminus(expr* );
+
+
+
+
 SymbolTableEntry* newtemp();
+
 
 void printTheQuadsMyLove();
 

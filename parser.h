@@ -146,12 +146,13 @@ union YYSTYPE
 {
 #line 21 "parser.y" /* yacc.c:1909  */
 
-	char*			stringValue;
-	int				intValue;
+	char*		stringValue;
+	int			intValue;
 	double		realValue;
 	struct expr* exprValue;
+	struct func_t_s*		funcValue;
 
-#line 155 "parser.h" /* yacc.c:1909  */
+#line 156 "parser.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

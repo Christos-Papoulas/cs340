@@ -218,12 +218,13 @@ union YYSTYPE
 {
 #line 21 "parser.y" /* yacc.c:355  */
 
-	char*			stringValue;
-	int				intValue;
+	char*		stringValue;
+	int			intValue;
 	double		realValue;
 	struct expr* exprValue;
+	struct func_t_s*		funcValue;
 
-#line 227 "parser.c" /* yacc.c:355  */
+#line 228 "parser.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -240,7 +241,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 244 "parser.c" /* yacc.c:358  */
+#line 245 "parser.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -542,16 +543,16 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   105,   105,   106,   109,   110,   113,   114,   115,   116,
-     117,   118,   119,   120,   121,   122,   125,   129,   135,   141,
-     147,   153,   159,   169,   179,   188,   199,   210,   220,   221,
-     222,   228,   229,   230,   231,   232,   233,   234,   235,   241,
-     277,   283,   284,   285,   286,   293,   339,   362,   372,   378,
-     384,   393,   394,   397,   398,   399,   402,   403,   406,   409,
-     412,   413,   416,   417,   420,   421,   424,   427,   428,   431,
-     435,   434,   446,   457,   457,   465,   472,   483,   508,   519,
-     518,   531,   535,   539,   543,   547,   554,   553,   565,   569,
-     568,   586,   589,   590,   593,   596,   599,   602,   603
+       0,   112,   112,   113,   116,   117,   120,   121,   122,   123,
+     124,   125,   126,   127,   128,   129,   132,   136,   142,   148,
+     154,   160,   166,   176,   186,   195,   206,   217,   227,   228,
+     229,   235,   240,   249,   257,   273,   289,   305,   321,   327,
+     365,   371,   375,   376,   382,   389,   435,   458,   468,   474,
+     481,   490,   491,   494,   499,   512,   521,   526,   533,   542,
+     551,   559,   565,   573,   579,   580,   583,   586,   587,   590,
+     594,   593,   605,   616,   616,   624,   631,   642,   667,   678,
+     677,   690,   694,   698,   702,   706,   713,   712,   724,   728,
+     727,   745,   748,   749,   752,   755,   758,   761,   762
 };
 #endif
 
@@ -1539,155 +1540,155 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 105 "parser.y" /* yacc.c:1646  */
+#line 112 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "program -> stmts stmt\n");}
-#line 1545 "parser.c" /* yacc.c:1646  */
+#line 1546 "parser.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 106 "parser.y" /* yacc.c:1646  */
+#line 113 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "program -> empty\n");}
-#line 1551 "parser.c" /* yacc.c:1646  */
+#line 1552 "parser.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 109 "parser.y" /* yacc.c:1646  */
+#line 116 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmts -> stmts stmt\n");}
-#line 1557 "parser.c" /* yacc.c:1646  */
+#line 1558 "parser.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 110 "parser.y" /* yacc.c:1646  */
+#line 117 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmts -> empty\n");}
-#line 1563 "parser.c" /* yacc.c:1646  */
+#line 1564 "parser.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 113 "parser.y" /* yacc.c:1646  */
+#line 120 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> expr ;\n");}
-#line 1569 "parser.c" /* yacc.c:1646  */
+#line 1570 "parser.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 114 "parser.y" /* yacc.c:1646  */
+#line 121 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> ifstmt\n");}
-#line 1575 "parser.c" /* yacc.c:1646  */
+#line 1576 "parser.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 115 "parser.y" /* yacc.c:1646  */
+#line 122 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> whilestmt\n");}
-#line 1581 "parser.c" /* yacc.c:1646  */
+#line 1582 "parser.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 116 "parser.y" /* yacc.c:1646  */
+#line 123 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> forstmt\n");}
-#line 1587 "parser.c" /* yacc.c:1646  */
+#line 1588 "parser.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 117 "parser.y" /* yacc.c:1646  */
+#line 124 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> returnstmt\n");}
-#line 1593 "parser.c" /* yacc.c:1646  */
+#line 1594 "parser.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 118 "parser.y" /* yacc.c:1646  */
+#line 125 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> break ;\n");}
-#line 1599 "parser.c" /* yacc.c:1646  */
+#line 1600 "parser.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 119 "parser.y" /* yacc.c:1646  */
+#line 126 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> continue ;\n");}
-#line 1605 "parser.c" /* yacc.c:1646  */
+#line 1606 "parser.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 120 "parser.y" /* yacc.c:1646  */
+#line 127 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> block\n");}
-#line 1611 "parser.c" /* yacc.c:1646  */
+#line 1612 "parser.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 121 "parser.y" /* yacc.c:1646  */
+#line 128 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> funcdef\n");}
-#line 1617 "parser.c" /* yacc.c:1646  */
+#line 1618 "parser.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 122 "parser.y" /* yacc.c:1646  */
+#line 129 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "stmt -> ;\n");}
-#line 1623 "parser.c" /* yacc.c:1646  */
+#line 1624 "parser.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 125 "parser.y" /* yacc.c:1646  */
+#line 132 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 				fprintf(stderr, "expr -> assignexpr\n");
 			}
-#line 1632 "parser.c" /* yacc.c:1646  */
+#line 1633 "parser.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 129 "parser.y" /* yacc.c:1646  */
+#line 136 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr(arithexpr_e);
 				(yyval.exprValue)->sym = newtemp();
 				emit(add, (yyvsp[-2].exprValue), (yyvsp[0].exprValue), (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr + expr\n");
 			}
-#line 1643 "parser.c" /* yacc.c:1646  */
+#line 1644 "parser.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 135 "parser.y" /* yacc.c:1646  */
+#line 142 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr(arithexpr_e);
 				(yyval.exprValue)->sym = newtemp();
 				emit(sub, (yyvsp[-2].exprValue), (yyvsp[0].exprValue), (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr - expr\n");
 			}
-#line 1654 "parser.c" /* yacc.c:1646  */
+#line 1655 "parser.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 141 "parser.y" /* yacc.c:1646  */
+#line 148 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr(arithexpr_e);
 				(yyval.exprValue)->sym = newtemp();
 				emit(mul, (yyvsp[-2].exprValue), (yyvsp[0].exprValue), (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr * expr\n");
 			}
-#line 1665 "parser.c" /* yacc.c:1646  */
+#line 1666 "parser.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 147 "parser.y" /* yacc.c:1646  */
+#line 154 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr(arithexpr_e);
 				(yyval.exprValue)->sym = newtemp();
 				emit(divi, (yyvsp[-2].exprValue), (yyvsp[0].exprValue), (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr / expr\n");
 			}
-#line 1676 "parser.c" /* yacc.c:1646  */
+#line 1677 "parser.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 153 "parser.y" /* yacc.c:1646  */
+#line 160 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr(arithexpr_e);
 				(yyval.exprValue)->sym = newtemp();
 				emit(mod, (yyvsp[-2].exprValue), (yyvsp[0].exprValue), (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr mod expr\n");
 			}
-#line 1687 "parser.c" /* yacc.c:1646  */
+#line 1688 "parser.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 159 "parser.y" /* yacc.c:1646  */
+#line 166 "parser.y" /* yacc.c:1646  */
     {
 				assert((yyvsp[-2].exprValue)!=NULL && (yyvsp[-1].stringValue)!=NULL);
 				(yyval.exprValue) = newexpr(booleanexpr_e);
@@ -1698,11 +1699,11 @@ yyreduce:
 				emit (assign, newexpr_constbool(1), NULL, (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr > expr\n");
 			}
-#line 1702 "parser.c" /* yacc.c:1646  */
+#line 1703 "parser.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 169 "parser.y" /* yacc.c:1646  */
+#line 176 "parser.y" /* yacc.c:1646  */
     {
 				assert((yyvsp[-2].exprValue)!=NULL && (yyvsp[-1].stringValue)!=NULL);
 				(yyval.exprValue) = newexpr(booleanexpr_e);
@@ -1713,11 +1714,11 @@ yyreduce:
 				emit (assign, newexpr_constbool(1), NULL, (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr >= expr\n");
 			}
-#line 1717 "parser.c" /* yacc.c:1646  */
+#line 1718 "parser.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 179 "parser.y" /* yacc.c:1646  */
+#line 186 "parser.y" /* yacc.c:1646  */
     {
 				assert((yyvsp[-2].exprValue)!=NULL && (yyvsp[-1].stringValue)!=NULL);
 				(yyval.exprValue) = newexpr(booleanexpr_e);
@@ -1727,11 +1728,11 @@ yyreduce:
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, (yyval.exprValue), 0, yylineno);
 				fprintf(stderr, "expr -> expr < expr\n");}
-#line 1731 "parser.c" /* yacc.c:1646  */
+#line 1732 "parser.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 188 "parser.y" /* yacc.c:1646  */
+#line 195 "parser.y" /* yacc.c:1646  */
     {
 				assert((yyvsp[-2].exprValue)!=NULL && (yyvsp[-1].stringValue)!=NULL);
 				(yyval.exprValue) = newexpr(booleanexpr_e);
@@ -1743,11 +1744,11 @@ yyreduce:
 				
 				fprintf(stderr, "expr -> expr <= expr\n");
 			}
-#line 1747 "parser.c" /* yacc.c:1646  */
+#line 1748 "parser.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 199 "parser.y" /* yacc.c:1646  */
+#line 206 "parser.y" /* yacc.c:1646  */
     {
 				assert((yyvsp[-2].exprValue)!=NULL && (yyvsp[-1].stringValue)!=NULL);
 				(yyval.exprValue) = newexpr(booleanexpr_e);
@@ -1759,11 +1760,11 @@ yyreduce:
 				
 				fprintf(stderr, "expr -> expr == expr\n");
 			}
-#line 1763 "parser.c" /* yacc.c:1646  */
+#line 1764 "parser.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 210 "parser.y" /* yacc.c:1646  */
+#line 217 "parser.y" /* yacc.c:1646  */
     {
 				assert((yyvsp[-2].exprValue)!=NULL && (yyvsp[-1].stringValue)!=NULL);
 				(yyval.exprValue) = newexpr(booleanexpr_e);
@@ -1774,83 +1775,155 @@ yyreduce:
 				emit (assign, newexpr_constbool(1), NULL, (yyval.exprValue), 0, yylineno);
 				
 				fprintf(stderr, "expr -> expr != expr\n");}
-#line 1778 "parser.c" /* yacc.c:1646  */
+#line 1779 "parser.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 220 "parser.y" /* yacc.c:1646  */
+#line 227 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "expr -> expr AND expr\n");}
-#line 1784 "parser.c" /* yacc.c:1646  */
+#line 1785 "parser.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 221 "parser.y" /* yacc.c:1646  */
+#line 228 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "expr -> expr OR expr\n");}
-#line 1790 "parser.c" /* yacc.c:1646  */
+#line 1791 "parser.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 222 "parser.y" /* yacc.c:1646  */
+#line 229 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 				fprintf(stderr, "expr -> term\n");
 			}
-#line 1799 "parser.c" /* yacc.c:1646  */
+#line 1800 "parser.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 228 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> (expr)\n");}
-#line 1805 "parser.c" /* yacc.c:1646  */
+#line 236 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.exprValue) = (yyvsp[-1].exprValue);
+				fprintf(stderr, "term -> (expr)\n");
+			}
+#line 1809 "parser.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 229 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> - expr\n");}
-#line 1811 "parser.c" /* yacc.c:1646  */
+#line 241 "parser.y" /* yacc.c:1646  */
+    {
+				checkuminus((yyvsp[0].exprValue));
+				(yyval.exprValue) = newexpr(arithexpr_e);
+				(yyval.exprValue)->sym = newtemp();
+				emit(uminus, (yyvsp[0].exprValue), NULL, (yyval.exprValue), 0, yylineno);
+
+				fprintf(stderr, "term -> - expr\n");
+			}
+#line 1822 "parser.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 230 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> (expr)\n");}
-#line 1817 "parser.c" /* yacc.c:1646  */
+#line 250 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.exprValue) = newexpr(booleanexpr_e);
+				(yyval.exprValue)->sym = newtemp();
+				emit(not, (yyvsp[0].exprValue), NULL, (yyval.exprValue), 0, yylineno);
+
+				fprintf(stderr, "term -> ! expr\n");
+			}
+#line 1834 "parser.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 231 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> ++lvalue\n");}
-#line 1823 "parser.c" /* yacc.c:1646  */
+#line 258 "parser.y" /* yacc.c:1646  */
+    {
+				expr* lvalue = (yyvsp[0].exprValue);
+				if(lvalue->type == tableitem_e) {
+					(yyval.exprValue) = emit_iftableitem(lvalue);
+					emit(add, lvalue, newexpr_constnum("1"), (yyval.exprValue), 0, yylineno);
+					emit(tablesetelem, lvalue, lvalue->index, (yyval.exprValue), 0, yylineno);
+				} else {
+					emit(add, lvalue, newexpr_constnum("1"), lvalue, 0, yylineno);
+					(yyval.exprValue) = newexpr(arithexpr_e);
+					(yyval.exprValue)->sym = newtemp();
+					emit(assign, lvalue, NULL, (yyval.exprValue), 0, yylineno);
+
+				}
+				fprintf(stderr, "term -> ++lvalue\n");
+			}
+#line 1854 "parser.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 232 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> lvalue++\n");}
-#line 1829 "parser.c" /* yacc.c:1646  */
+#line 274 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.exprValue) = newexpr(var_e);
+				(yyval.exprValue)->sym = newtemp();
+
+				if((yyvsp[-1].exprValue)->type == tableitem_e) {
+					expr* value = emit_iftableitem((yyvsp[-1].exprValue));
+					emit(assign, value, NULL, (yyval.exprValue), 0, yylineno);
+					emit(add, value, newexpr_constnum("1"), value, 0, yylineno);
+					emit(tablesetelem, value, (yyvsp[-1].exprValue)->index, (yyvsp[-1].exprValue), 0, yylineno);
+				} else {
+					emit(assign, (yyvsp[-1].exprValue), NULL, (yyval.exprValue), 0, yylineno);
+					emit(add, (yyvsp[-1].exprValue), newexpr_constnum("1"), (yyvsp[-1].exprValue), 0, yylineno);
+				}
+				fprintf(stderr, "term -> lvalue++\n");
+			}
+#line 1874 "parser.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 233 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> --lvalue\n");}
-#line 1835 "parser.c" /* yacc.c:1646  */
+#line 290 "parser.y" /* yacc.c:1646  */
+    {
+				expr* lvalue = (yyvsp[0].exprValue);
+				if(lvalue->type == tableitem_e) {
+					(yyval.exprValue) = emit_iftableitem(lvalue);
+					emit(sub, (yyval.exprValue), newexpr_constnum("1"), (yyval.exprValue), 0, yylineno);
+					emit(tablesetelem, lvalue, lvalue->index, (yyval.exprValue), 0, yylineno);
+				} else {
+					emit(sub, (yyvsp[0].exprValue), newexpr_constnum("1"), (yyvsp[0].exprValue), 0, yylineno);
+					(yyval.exprValue) = newexpr(arithexpr_e);
+					(yyval.exprValue)->sym = newtemp();
+					emit(assign, lvalue, NULL, (yyval.exprValue), 0, yylineno);
+
+				}
+				fprintf(stderr, "term -> --lvalue\n");
+			}
+#line 1894 "parser.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 234 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "term -> lvalue--\n");}
-#line 1841 "parser.c" /* yacc.c:1646  */
+#line 306 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.exprValue) = newexpr(var_e);
+				(yyval.exprValue)->sym = newtemp();
+
+				if((yyvsp[-1].exprValue)->type == tableitem_e) {
+					expr* value = emit_iftableitem((yyvsp[-1].exprValue));
+					emit(assign, value, NULL, (yyval.exprValue), 0, yylineno);
+					emit(sub, value, newexpr_constnum("1"), value, 0, yylineno);
+					emit(tablesetelem, value, (yyvsp[-1].exprValue)->index, (yyvsp[-1].exprValue), 0, yylineno);
+				} else {
+					emit(assign, (yyvsp[-1].exprValue), NULL, (yyval.exprValue), 0, yylineno);
+					emit(sub, (yyvsp[-1].exprValue), newexpr_constnum("1"), (yyvsp[-1].exprValue), 0, yylineno);
+				}
+				fprintf(stderr, "term -> lvalue--\n");
+			}
+#line 1914 "parser.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 235 "parser.y" /* yacc.c:1646  */
+#line 321 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 				fprintf(stderr, "term -> primary\n");
 			}
-#line 1850 "parser.c" /* yacc.c:1646  */
+#line 1923 "parser.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 241 "parser.y" /* yacc.c:1646  */
+#line 327 "parser.y" /* yacc.c:1646  */
     {
 				int i;
 				
@@ -1874,59 +1947,67 @@ yyreduce:
 
 				if ((yyvsp[-2].exprValue)->type == tableitem_e) {
 					emit (tablesetelem, (yyvsp[-2].exprValue), (yyvsp[-2].exprValue)->index, (yyvsp[0].exprValue), 0, yylineno);
-					(yyval.exprValue) = emit_iftableitem ((yyvsp[-2].exprValue));
+					(yyval.exprValue) = emit_iftableitem ((yyvsp[-2].exprValue)); 
 					(yyval.exprValue)->type = assignexpr_e;
 				} else {
 					emit (assign, (yyvsp[0].exprValue), NULL, (yyvsp[-2].exprValue), 0, yylineno);
-					(yyval.exprValue) = newexpr(assignexpr_e);
-					(yyval.exprValue)->sym = newtemp();
-					emit (assign, (yyvsp[-2].exprValue), NULL, (yyval.exprValue), 0, yylineno);
+					if((yyvsp[-2].exprValue)->sym->value.varVal.name[0] == '_') {
+						(yyval.exprValue) = newexpr(assignexpr_e);
+						(yyval.exprValue)->sym = newtemp();
+						emit (assign, (yyvsp[-2].exprValue), NULL, (yyval.exprValue), 0, yylineno);
+					} else
+						(yyval.exprValue)->sym = (yyvsp[-2].exprValue)->sym;
+					(yyval.exprValue) = (yyvsp[-2].exprValue);
 				}
-
-
 			}
-#line 1889 "parser.c" /* yacc.c:1646  */
+#line 1964 "parser.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 278 "parser.y" /* yacc.c:1646  */
+#line 366 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 				fprintf(stderr, "primary -> lvalue\n");
 				
 			}
-#line 1899 "parser.c" /* yacc.c:1646  */
+#line 1974 "parser.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 283 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "primary -> call\n");}
-#line 1905 "parser.c" /* yacc.c:1646  */
+#line 372 "parser.y" /* yacc.c:1646  */
+    {
+				fprintf(stderr, "primary -> call\n");
+			}
+#line 1982 "parser.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 284 "parser.y" /* yacc.c:1646  */
+#line 375 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "primary -> objectdef\n");}
-#line 1911 "parser.c" /* yacc.c:1646  */
+#line 1988 "parser.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 285 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "primary -> (funcdef)\n");}
-#line 1917 "parser.c" /* yacc.c:1646  */
+#line 377 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.exprValue) = newexpr(programfunc_e);
+				(yyval.exprValue)->sym = (yyvsp[-1].exprValue)->sym;
+				fprintf(stderr, "primary -> (funcdef)\n");
+			}
+#line 1998 "parser.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 287 "parser.y" /* yacc.c:1646  */
+#line 383 "parser.y" /* yacc.c:1646  */
     {
 				fprintf(stderr, "primary -> const\n");
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 			}
-#line 1926 "parser.c" /* yacc.c:1646  */
+#line 2007 "parser.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 294 "parser.y" /* yacc.c:1646  */
+#line 390 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
 				
@@ -1972,11 +2053,11 @@ yyreduce:
 
 				fprintf(stderr, "lvalue -> ID %s \n", yylval.stringValue);
 			}
-#line 1976 "parser.c" /* yacc.c:1646  */
+#line 2057 "parser.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 340 "parser.y" /* yacc.c:1646  */
+#line 436 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
 				SymbolTableEntry* newvar = NULL;
@@ -1999,11 +2080,11 @@ yyreduce:
 
 				fprintf(stderr, "lvalue -> LOCAL ID\n");
 			}
-#line 2003 "parser.c" /* yacc.c:1646  */
+#line 2084 "parser.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 363 "parser.y" /* yacc.c:1646  */
+#line 459 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(0,yylval.stringValue);
 				if (!tmp) {
@@ -2013,31 +2094,32 @@ yyreduce:
 				fprintf(stderr, "lvalue -> ::ID\n");
 				(yyval.exprValue) = lvalue_expr(tmp);
 			}
-#line 2017 "parser.c" /* yacc.c:1646  */
+#line 2098 "parser.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 372 "parser.y" /* yacc.c:1646  */
+#line 468 "parser.y" /* yacc.c:1646  */
     {
 				fprintf(stderr, "lvalue -> member\n");
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 			}
-#line 2026 "parser.c" /* yacc.c:1646  */
+#line 2107 "parser.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 378 "parser.y" /* yacc.c:1646  */
+#line 474 "parser.y" /* yacc.c:1646  */
     {
-
-				(yyval.exprValue) = member_item ((yyvsp[-2].exprValue), (yyvsp[0].stringValue));
+				(yyvsp[-2].exprValue)->type = tableitem_e;
+				(yyvsp[-2].exprValue)->index = newexpr_conststring((yyvsp[0].stringValue));
+				(yyval.exprValue) = emit_iftableitem((yyvsp[-2].exprValue));
 
 				fprintf(stderr, "member -> lvalue.id\n");
 			}
-#line 2037 "parser.c" /* yacc.c:1646  */
+#line 2119 "parser.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 385 "parser.y" /* yacc.c:1646  */
+#line 482 "parser.y" /* yacc.c:1646  */
     {
 				expr* member = newexpr(tableitem_e);
 				(yyvsp[-3].exprValue)->type = tableitem_e;
@@ -2046,137 +2128,194 @@ yyreduce:
 				(yyval.exprValue) = member;
 				fprintf(stderr, "member -> lvalue [expr]\n");
 			}
-#line 2050 "parser.c" /* yacc.c:1646  */
+#line 2132 "parser.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 393 "parser.y" /* yacc.c:1646  */
+#line 490 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "member -> call.id\n");}
-#line 2056 "parser.c" /* yacc.c:1646  */
+#line 2138 "parser.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 394 "parser.y" /* yacc.c:1646  */
+#line 491 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "member -> call [expr]\n");}
-#line 2062 "parser.c" /* yacc.c:1646  */
+#line 2144 "parser.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 397 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "call -> call (elist)\n");}
-#line 2068 "parser.c" /* yacc.c:1646  */
+#line 495 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.exprValue) = make_call((yyvsp[-3].exprValue), (yyvsp[-1].funcValue));
+				fprintf(stderr, "call -> call (elist)\n");
+			}
+#line 2153 "parser.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 398 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "call -> lvalue callsuffix\n");}
-#line 2074 "parser.c" /* yacc.c:1646  */
+#line 500 "parser.y" /* yacc.c:1646  */
+    {
+				if((yyvsp[0].funcValue)->method) {
+					expr* self = (yyvsp[-1].exprValue);
+					if((yyvsp[0].funcValue)->name)
+						self->index = newexpr_conststring((yyvsp[0].funcValue)->name);
+					(yyvsp[-1].exprValue) = emit_iftableitem(self);
+					(yyvsp[0].funcValue) = add_front((yyvsp[0].funcValue), self);
+					(yyvsp[0].funcValue)->method = 0;
+				}
+				(yyval.exprValue) = make_call((yyvsp[-1].exprValue), (yyvsp[0].funcValue));
+				fprintf(stderr, "call -> lvalue callsuffix\n");
+			}
+#line 2170 "parser.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 399 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "call -> (functdef) (elist)\n");}
-#line 2080 "parser.c" /* yacc.c:1646  */
+#line 513 "parser.y" /* yacc.c:1646  */
+    {
+				expr* func = newexpr(programfunc_e);
+				func->sym = (yyvsp[-4].exprValue)->sym;
+				(yyval.exprValue) = make_call(func, (yyvsp[-1].funcValue));
+				fprintf(stderr, "call -> (functdef) (elist)\n");
+			}
+#line 2181 "parser.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 402 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "callsuffix -> normcall\n");}
-#line 2086 "parser.c" /* yacc.c:1646  */
+#line 522 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = (yyvsp[0].funcValue);
+				fprintf(stderr, "callsuffix -> normcall\n");
+			}
+#line 2190 "parser.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 403 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "callsuffix -> methodcall\n");}
-#line 2092 "parser.c" /* yacc.c:1646  */
+#line 527 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = (yyvsp[0].funcValue);
+				fprintf(stderr, "callsuffix -> methodcall\n");
+			}
+#line 2199 "parser.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 406 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "normcall -> (elist)\n");}
-#line 2098 "parser.c" /* yacc.c:1646  */
+#line 534 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = (yyvsp[-1].funcValue);
+				(yyval.funcValue)->method = 0;
+				(yyval.funcValue)->name = NULL;
+				fprintf(stderr, "normcall -> (elist)\n");
+			}
+#line 2210 "parser.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 409 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "methodcall -> ..id (elist)\n");}
-#line 2104 "parser.c" /* yacc.c:1646  */
+#line 543 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = (yyvsp[-1].funcValue);
+				(yyval.funcValue)->method = 1;
+				(yyval.funcValue)->name = strdup((yyvsp[-3].stringValue));
+				fprintf(stderr, "methodcall -> ..id (elist)\n");
+			}
+#line 2221 "parser.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 412 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "elist -> expr elists\n");}
-#line 2110 "parser.c" /* yacc.c:1646  */
+#line 552 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = malloc(sizeof(func_t));
+				(yyval.funcValue)->expr = (yyvsp[-1].exprValue);
+				(yyval.funcValue)->next = (yyvsp[0].funcValue);
+				fprintf(stderr, "elist -> expr elists\n");
+			}
+#line 2232 "parser.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 559 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = NULL;
+				fprintf(stderr, "elist -> empty\n");
+			}
+#line 2241 "parser.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 416 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "elists -> ,expr elists\n");}
-#line 2116 "parser.c" /* yacc.c:1646  */
+#line 566 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = malloc(sizeof(func_t));
+				(yyval.funcValue)->expr = (yyvsp[-1].exprValue);
+				(yyval.funcValue)->next = (yyvsp[0].funcValue);	
+				fprintf(stderr, "elists -> ,expr elists\n");
+			}
+#line 2252 "parser.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 417 "parser.y" /* yacc.c:1646  */
-    {fprintf(stderr, "elists -> empty\n");}
-#line 2122 "parser.c" /* yacc.c:1646  */
+#line 573 "parser.y" /* yacc.c:1646  */
+    {
+				(yyval.funcValue) = NULL;
+				fprintf(stderr, "elists -> empty\n");
+			}
+#line 2261 "parser.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 420 "parser.y" /* yacc.c:1646  */
+#line 579 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "objectdef -> 	[elist]\n");}
-#line 2128 "parser.c" /* yacc.c:1646  */
+#line 2267 "parser.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 421 "parser.y" /* yacc.c:1646  */
+#line 580 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "objectdef -> [indexed]\n");}
-#line 2134 "parser.c" /* yacc.c:1646  */
+#line 2273 "parser.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 424 "parser.y" /* yacc.c:1646  */
+#line 583 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexed -> indexedelem\n");}
-#line 2140 "parser.c" /* yacc.c:1646  */
+#line 2279 "parser.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 427 "parser.y" /* yacc.c:1646  */
+#line 586 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexeds -> ,indexed\n");}
-#line 2146 "parser.c" /* yacc.c:1646  */
+#line 2285 "parser.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 428 "parser.y" /* yacc.c:1646  */
+#line 587 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexeds -> empty\n");}
-#line 2152 "parser.c" /* yacc.c:1646  */
+#line 2291 "parser.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 431 "parser.y" /* yacc.c:1646  */
+#line 590 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "indexdelem -> {expr : expr}\n");}
-#line 2158 "parser.c" /* yacc.c:1646  */
+#line 2297 "parser.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 435 "parser.y" /* yacc.c:1646  */
+#line 594 "parser.y" /* yacc.c:1646  */
     {
 				scopeUp();
 			}
-#line 2166 "parser.c" /* yacc.c:1646  */
+#line 2305 "parser.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 439 "parser.y" /* yacc.c:1646  */
+#line 598 "parser.y" /* yacc.c:1646  */
     {
 				deactivateScope (getScope());
 				scopeDown();
 				fprintf(stderr, "block -> [stmts] \n");
 			}
-#line 2176 "parser.c" /* yacc.c:1646  */
+#line 2315 "parser.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 447 "parser.y" /* yacc.c:1646  */
+#line 606 "parser.y" /* yacc.c:1646  */
     {
 				exitscopespace();
 				//$1->totallocals = functionLocalOffset;
@@ -2185,36 +2324,36 @@ yyreduce:
 				emit (funcend, NULL, NULL, ((yyvsp[-2].exprValue)), 0, yylineno);
 				fprintf(stderr, "funcdef -> funcprefix funcargs funcbody \n");
 			}
-#line 2189 "parser.c" /* yacc.c:1646  */
+#line 2328 "parser.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 457 "parser.y" /* yacc.c:1646  */
+#line 616 "parser.y" /* yacc.c:1646  */
     {scopeUp();}
-#line 2195 "parser.c" /* yacc.c:1646  */
+#line 2334 "parser.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 458 "parser.y" /* yacc.c:1646  */
+#line 617 "parser.y" /* yacc.c:1646  */
     {
 				enterscopespace();
 				resetfunctionlocaloffset();
 				fprintf(stderr, "funcargs -> (idlist)\n");
 			}
-#line 2205 "parser.c" /* yacc.c:1646  */
+#line 2344 "parser.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 466 "parser.y" /* yacc.c:1646  */
+#line 625 "parser.y" /* yacc.c:1646  */
     {
 				exitscopespace();
 				fprintf(stderr, "funcbody -> funcblock\n");
 			}
-#line 2214 "parser.c" /* yacc.c:1646  */
+#line 2353 "parser.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 472 "parser.y" /* yacc.c:1646  */
+#line 631 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = (yyvsp[0].exprValue);
 				(yyval.exprValue)->iaddress = nextquad();
@@ -2224,11 +2363,11 @@ yyreduce:
 				resetformalargsoffset();
 				fprintf(stderr, "funcprefix -> FUNCTION funcname\n");
 			}
-#line 2228 "parser.c" /* yacc.c:1646  */
+#line 2367 "parser.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 484 "parser.y" /* yacc.c:1646  */
+#line 643 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(getScope(), yylval.stringValue);
 				SymbolTableEntry* new = NULL;
@@ -2252,11 +2391,11 @@ yyreduce:
 				fprintf(stderr, "funcname -> ID \n");
 
 			}
-#line 2256 "parser.c" /* yacc.c:1646  */
+#line 2395 "parser.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 508 "parser.y" /* yacc.c:1646  */
+#line 667 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr(programfunc_e);
 				(yyval.exprValue)->sym = insert(getScope(), getAFunctionName(), yylineno, E_USERFUNC);
@@ -2264,75 +2403,75 @@ yyreduce:
 				fprintf(stderr, "funcname -> empty \n");
 
 			}
-#line 2268 "parser.c" /* yacc.c:1646  */
+#line 2407 "parser.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 519 "parser.y" /* yacc.c:1646  */
+#line 678 "parser.y" /* yacc.c:1646  */
     {
 				push(getScope());
 			}
-#line 2276 "parser.c" /* yacc.c:1646  */
+#line 2415 "parser.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 523 "parser.y" /* yacc.c:1646  */
+#line 682 "parser.y" /* yacc.c:1646  */
     {
 				deactivateScope (getScope());
 				scopeDown();
 				pop();
 				fprintf(stderr, "funcblock -> [stmts] \n");
 			}
-#line 2287 "parser.c" /* yacc.c:1646  */
+#line 2426 "parser.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 531 "parser.y" /* yacc.c:1646  */
+#line 690 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr_constnum(yytext);
 				fprintf(stderr, "const -> intconst\n");
 			}
-#line 2296 "parser.c" /* yacc.c:1646  */
+#line 2435 "parser.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 535 "parser.y" /* yacc.c:1646  */
+#line 694 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr_conststring(yytext);
 				fprintf(stderr, "const -> string\n");
 			}
-#line 2305 "parser.c" /* yacc.c:1646  */
+#line 2444 "parser.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 539 "parser.y" /* yacc.c:1646  */
+#line 698 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr_constnil ();
 				fprintf(stderr, "const -> nil\n");
 			}
-#line 2314 "parser.c" /* yacc.c:1646  */
+#line 2453 "parser.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 543 "parser.y" /* yacc.c:1646  */
+#line 702 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr_constbool (1);
 				fprintf(stderr, "const -> true\n");
 			}
-#line 2323 "parser.c" /* yacc.c:1646  */
+#line 2462 "parser.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 547 "parser.y" /* yacc.c:1646  */
+#line 706 "parser.y" /* yacc.c:1646  */
     {
 				(yyval.exprValue) = newexpr_constbool (0);
 				fprintf(stderr, "const -> false\n");
 			}
-#line 2332 "parser.c" /* yacc.c:1646  */
+#line 2471 "parser.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 554 "parser.y" /* yacc.c:1646  */
+#line 713 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* t = insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
 				if(isLibraryFunction(yylval.stringValue)){
@@ -2340,26 +2479,26 @@ yyreduce:
 					exit(-1);
 				}
 			}
-#line 2344 "parser.c" /* yacc.c:1646  */
+#line 2483 "parser.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 561 "parser.y" /* yacc.c:1646  */
+#line 720 "parser.y" /* yacc.c:1646  */
     {
 				fprintf(stderr, "idlist -> ID ids\n"); 
 
 			}
-#line 2353 "parser.c" /* yacc.c:1646  */
+#line 2492 "parser.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 565 "parser.y" /* yacc.c:1646  */
+#line 724 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "idlist -> empty\n");}
-#line 2359 "parser.c" /* yacc.c:1646  */
+#line 2498 "parser.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 569 "parser.y" /* yacc.c:1646  */
+#line 728 "parser.y" /* yacc.c:1646  */
     {
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
 				if(isLibraryFunction(yylval.stringValue)){
@@ -2373,67 +2512,67 @@ yyreduce:
 				SymbolTableEntry* t = insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
 				assert(t);
 			}
-#line 2377 "parser.c" /* yacc.c:1646  */
+#line 2516 "parser.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 583 "parser.y" /* yacc.c:1646  */
+#line 742 "parser.y" /* yacc.c:1646  */
     {
 				fprintf(stderr, "ids -> COMMA ID ids\n");
 			}
-#line 2385 "parser.c" /* yacc.c:1646  */
+#line 2524 "parser.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 586 "parser.y" /* yacc.c:1646  */
+#line 745 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ids -> empty\n");}
-#line 2391 "parser.c" /* yacc.c:1646  */
+#line 2530 "parser.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 589 "parser.y" /* yacc.c:1646  */
+#line 748 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ifstmt -> ifprefix stmt\n");}
-#line 2397 "parser.c" /* yacc.c:1646  */
+#line 2536 "parser.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 590 "parser.y" /* yacc.c:1646  */
+#line 749 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ifstmt -> ifprefix stmt ELSE stmt\n");}
-#line 2403 "parser.c" /* yacc.c:1646  */
+#line 2542 "parser.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 593 "parser.y" /* yacc.c:1646  */
+#line 752 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "ifprefix -> IF (expr)\n");}
-#line 2409 "parser.c" /* yacc.c:1646  */
+#line 2548 "parser.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 596 "parser.y" /* yacc.c:1646  */
+#line 755 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "whilestmt -> WHILE (expr) stmt\n");}
-#line 2415 "parser.c" /* yacc.c:1646  */
+#line 2554 "parser.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 599 "parser.y" /* yacc.c:1646  */
+#line 758 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "forstmt -> FOR (elist; expr; elist) stmt\n");}
-#line 2421 "parser.c" /* yacc.c:1646  */
+#line 2560 "parser.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 602 "parser.y" /* yacc.c:1646  */
+#line 761 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "returnstmt -> return expr;\n");}
-#line 2427 "parser.c" /* yacc.c:1646  */
+#line 2566 "parser.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 603 "parser.y" /* yacc.c:1646  */
+#line 762 "parser.y" /* yacc.c:1646  */
     {fprintf(stderr, "returnstmt -> return; \n");}
-#line 2433 "parser.c" /* yacc.c:1646  */
+#line 2572 "parser.c" /* yacc.c:1646  */
     break;
 
 
-#line 2437 "parser.c" /* yacc.c:1646  */
+#line 2576 "parser.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2661,7 +2800,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 605 "parser.y" /* yacc.c:1906  */
+#line 764 "parser.y" /* yacc.c:1906  */
 
 
 int yyerror (char* yaccProvidedMessage) {

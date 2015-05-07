@@ -199,7 +199,7 @@ SymbolTableEntry* newtemp () {
 		return sym;
 	}
 	tmpNum--;
-	return (insert(getScope(), str, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL));
+	return insert(getScope(), str, yylineno, getScope() == 0 ? E_GLOBAL : E_LOCAL);
 }
 
 int nextquad () {
@@ -213,13 +213,53 @@ char* opstrings[] = {
 	"not", "if_eq", "if_noteq", 
 	"if_lesseq", "if_greatereq", "if_less",
 	"if_greater", "call", "param",
-	"ret", "getretal", "funcstart", 
+	"ret", "getretval", "funcstart", 
 	"funcend", "tablecreate", 
 	"tablegetelem", "tablesetelem", "jump"
 };
 
 void printOperation(iopcode op) {
 	fprintf(stdout, "%s\t", opstrings[op]);
+}
+
+
+expr* make_call(expr* lvalue, func_t* elist) {
+	expr* func = emit_iftableitem(lvalue),
+		  *result;
+	func_t* tmp;
+	int count = 0, i;
+	for(tmp = elist; tmp; tmp = tmp->next, count++)
+		;
+	func_t** reversed_elist = malloc(sizeof(func_t)*count);
+
+	for(tmp = elist, i = 0; tmp; tmp = tmp->next, i++)
+		reversed_elist[i] = tmp;
+
+	for(i = count -1 ; i >= 0; i--) 
+		emit(param, NULL, NULL, reversed_elist[i]->expr, 0, yylineno);
+	
+	emit(call, NULL, NULL, func, 0, yylineno);
+	result = newexpr(var_e);
+	result->sym = newtemp();
+	emit(getretval, NULL, NULL, result, 0, yylineno);
+	return result;
+}
+
+func_t* add_front(func_t* f, expr* e) {
+	func_t* new = malloc(sizeof(func_t));
+	new->expr = e;
+	new->next = f;
+	return new;
+}
+
+void checkuminus(expr* e) {
+	if(e->type == constnum_e|| e->type == conststring_e||
+		e->type == nil_e|| e->type == newtable_e||
+		e->type == programfunc_e|| e->type == libraryfunc_e||
+		e->type == booleanexpr_e) {
+		fprintf(stderr, "Error at line: %d: Illegal expr to unary -", yylineno );
+	}
+
 }
 
 void printArguments (expr* arg) {

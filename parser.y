@@ -19,10 +19,11 @@
 %}
 
 %union {
-	char*			stringValue;
-	int				intValue;
+	char*		stringValue;
+	int			intValue;
 	double		realValue;
 	struct expr* exprValue;
+	struct func_t_s*		funcValue;
 }
 
 %start program
@@ -86,6 +87,12 @@
 %type <exprValue> funcdef
 %type <exprValue> funcprefix
 %type <exprValue> funcname
+%type <funcValue> elist
+%type <funcValue> elists
+%type <exprValue> call
+%type <funcValue> methodcall
+%type <funcValue> normcall
+%type <funcValue> callsuffix
 
 %left ASSIGN
 %left AND
@@ -225,13 +232,92 @@ expr:		assignexpr {
 			}
 			;		
 			
-term: LEFT_PARENTHESIS expr RIGHT_PARENTHESIS {fprintf(stderr, "term -> (expr)\n");}
-			|MINUS expr {fprintf(stderr, "term -> - expr\n");}
-			|NOT expr {fprintf(stderr, "term -> (expr)\n");}
-			|INCREMENT lvalue {fprintf(stderr, "term -> ++lvalue\n");}
-			|lvalue INCREMENT {fprintf(stderr, "term -> lvalue++\n");}
-			|DECREMENT lvalue {fprintf(stderr, "term -> --lvalue\n");}
-			|lvalue DECREMENT {fprintf(stderr, "term -> lvalue--\n");}
+term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
+			{
+				$$ = $2;
+				fprintf(stderr, "term -> (expr)\n");
+			}
+			|MINUS expr 
+			{
+				checkuminus($2);
+				$$ = newexpr(arithexpr_e);
+				$$->sym = newtemp();
+				emit(uminus, $2, NULL, $$, 0, yylineno);
+
+				fprintf(stderr, "term -> - expr\n");
+			}
+			|NOT expr 
+			{
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit(not, $2, NULL, $$, 0, yylineno);
+
+				fprintf(stderr, "term -> ! expr\n");
+			}
+			|INCREMENT lvalue 
+			{
+				expr* lvalue = $2;
+				if(lvalue->type == tableitem_e) {
+					$$ = emit_iftableitem(lvalue);
+					emit(add, lvalue, newexpr_constnum("1"), $$, 0, yylineno);
+					emit(tablesetelem, lvalue, lvalue->index, $$, 0, yylineno);
+				} else {
+					emit(add, lvalue, newexpr_constnum("1"), lvalue, 0, yylineno);
+					$$ = newexpr(arithexpr_e);
+					$$->sym = newtemp();
+					emit(assign, lvalue, NULL, $$, 0, yylineno);
+
+				}
+				fprintf(stderr, "term -> ++lvalue\n");
+			}
+			|lvalue INCREMENT 
+			{
+				$$ = newexpr(var_e);
+				$$->sym = newtemp();
+
+				if($1->type == tableitem_e) {
+					expr* value = emit_iftableitem($1);
+					emit(assign, value, NULL, $$, 0, yylineno);
+					emit(add, value, newexpr_constnum("1"), value, 0, yylineno);
+					emit(tablesetelem, value, $1->index, $1, 0, yylineno);
+				} else {
+					emit(assign, $1, NULL, $$, 0, yylineno);
+					emit(add, $1, newexpr_constnum("1"), $1, 0, yylineno);
+				}
+				fprintf(stderr, "term -> lvalue++\n");
+			}
+			|DECREMENT lvalue 
+			{
+				expr* lvalue = $2;
+				if(lvalue->type == tableitem_e) {
+					$$ = emit_iftableitem(lvalue);
+					emit(sub, $$, newexpr_constnum("1"), $$, 0, yylineno);
+					emit(tablesetelem, lvalue, lvalue->index, $$, 0, yylineno);
+				} else {
+					emit(sub, $2, newexpr_constnum("1"), $2, 0, yylineno);
+					$$ = newexpr(arithexpr_e);
+					$$->sym = newtemp();
+					emit(assign, lvalue, NULL, $$, 0, yylineno);
+
+				}
+				fprintf(stderr, "term -> --lvalue\n");
+			}
+			|lvalue DECREMENT 
+			{
+				$$ = newexpr(var_e);
+				$$->sym = newtemp();
+
+				if($1->type == tableitem_e) {
+					expr* value = emit_iftableitem($1);
+					emit(assign, value, NULL, $$, 0, yylineno);
+					emit(sub, value, newexpr_constnum("1"), value, 0, yylineno);
+					emit(tablesetelem, value, $1->index, $1, 0, yylineno);
+				} else {
+					emit(assign, $1, NULL, $$, 0, yylineno);
+					emit(sub, $1, newexpr_constnum("1"), $1, 0, yylineno);
+				}
+				fprintf(stderr, "term -> lvalue--\n");
+			}
 			|primary {
 				$$ = $1;
 				fprintf(stderr, "term -> primary\n");
@@ -261,16 +347,18 @@ assignexpr: lvalue ASSIGN expr {
 
 				if ($1->type == tableitem_e) {
 					emit (tablesetelem, $1, $1->index, $3, 0, yylineno);
-					$$ = emit_iftableitem ($1);
+					$$ = emit_iftableitem ($1); 
 					$$->type = assignexpr_e;
 				} else {
 					emit (assign, $3, NULL, $1, 0, yylineno);
-					$$ = newexpr(assignexpr_e);
-					$$->sym = newtemp();
-					emit (assign, $1, NULL, $$, 0, yylineno);
+					if($1->sym->value.varVal.name[0] == '_') {
+						$$ = newexpr(assignexpr_e);
+						$$->sym = newtemp();
+						emit (assign, $1, NULL, $$, 0, yylineno);
+					} else
+						$$->sym = $1->sym;
+					$$ = $1;
 				}
-
-
 			}
 			;
 
@@ -280,9 +368,17 @@ primary:	lvalue
 				fprintf(stderr, "primary -> lvalue\n");
 				
 			}
-			|call {fprintf(stderr, "primary -> call\n");}
+			|call 
+			{
+				fprintf(stderr, "primary -> call\n");
+			}
 			|objectdef {fprintf(stderr, "primary -> objectdef\n");}
-			|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS {fprintf(stderr, "primary -> (funcdef)\n");}
+			|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS 
+			{
+				$$ = newexpr(programfunc_e);
+				$$->sym = $2->sym;
+				fprintf(stderr, "primary -> (funcdef)\n");
+			}
 			|const 
 			{
 				fprintf(stderr, "primary -> const\n");
@@ -376,8 +472,9 @@ lvalue:		ID
 			;
 
 member:		lvalue DOT ID {
-
-				$$ = member_item ($1, $3);
+				$1->type = tableitem_e;
+				$1->index = newexpr_conststring($3);
+				$$ = emit_iftableitem($1);
 
 				fprintf(stderr, "member -> lvalue.id\n");
 			}
@@ -394,27 +491,89 @@ member:		lvalue DOT ID {
 			|call LEFT_BRACKETS expr RIGHT_BRACKETS {fprintf(stderr, "member -> call [expr]\n");}
 			;
 
-call:		call LEFT_PARENTHESIS elist RIGHT_PARENTHESIS {fprintf(stderr, "call -> call (elist)\n");}
-			|lvalue callsuffix {fprintf(stderr, "call -> lvalue callsuffix\n");}
-			|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS {fprintf(stderr, "call -> (functdef) (elist)\n");}
+call:		call LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
+			{
+				$$ = make_call($1, $3);
+				fprintf(stderr, "call -> call (elist)\n");
+			}
+			|lvalue callsuffix 
+			{
+				if($2->method) {
+					expr* self = $1;
+					if($2->name)
+						self->index = newexpr_conststring($2->name);
+					$1 = emit_iftableitem(self);
+					$2 = add_front($2, self);
+					$2->method = 0;
+				}
+				$$ = make_call($1, $2);
+				fprintf(stderr, "call -> lvalue callsuffix\n");
+			}
+			|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
+			{
+				expr* func = newexpr(programfunc_e);
+				func->sym = $2->sym;
+				$$ = make_call(func, $5);
+				fprintf(stderr, "call -> (functdef) (elist)\n");
+			}
 			;
 
-callsuffix:	normcall {fprintf(stderr, "callsuffix -> normcall\n");}
-			|methodcall {fprintf(stderr, "callsuffix -> methodcall\n");}
+callsuffix:	normcall 
+			{
+				$$ = $1;
+				fprintf(stderr, "callsuffix -> normcall\n");
+			}
+			|methodcall 
+			{
+				$$ = $1;
+				fprintf(stderr, "callsuffix -> methodcall\n");
+			}
 			;
 
-normcall:	LEFT_PARENTHESIS elist RIGHT_PARENTHESIS {fprintf(stderr, "normcall -> (elist)\n");}
+normcall:	LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
+			{
+				$$ = $2;
+				$$->method = 0;
+				$$->name = NULL;
+				fprintf(stderr, "normcall -> (elist)\n");
+			}
 			;
 
-methodcall: DOUBLE_DOT ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS {fprintf(stderr, "methodcall -> ..id (elist)\n");} 
+methodcall: DOUBLE_DOT ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
+			{
+				$$ = $4;
+				$$->method = 1;
+				$$->name = strdup($2);
+				fprintf(stderr, "methodcall -> ..id (elist)\n");
+			} 
 			;
 
-elist:		expr elists {fprintf(stderr, "elist -> expr elists\n");}
+elist:		expr elists 
+			{
+				$$ = malloc(sizeof(func_t));
+				$$->expr = $1;
+				$$->next = $2;
+				fprintf(stderr, "elist -> expr elists\n");
+			}
 			|/*empt*/
+			{
+				$$ = NULL;
+				fprintf(stderr, "elist -> empty\n");
+			}
 			;
 
-elists:		COMMA expr elists {fprintf(stderr, "elists -> ,expr elists\n");}
-			|/*empty*/ {fprintf(stderr, "elists -> empty\n");}
+elists:		COMMA expr elists 
+			{
+				$$ = malloc(sizeof(func_t));
+				$$->expr = $2;
+				$$->next = $3;	
+				fprintf(stderr, "elists -> ,expr elists\n");
+			}
+			|/*empty*/ 
+			{
+				$$ = NULL;
+				fprintf(stderr, "elists -> empty\n");
+			}
 			;
 
 objectdef:	LEFT_BRACKETS elist RIGHT_BRACKETS {fprintf(stderr, "objectdef -> 	[elist]\n");}

@@ -93,6 +93,7 @@ SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* n
 			default: 
 				assert(0);
 		}
+		assert(h->st[key]->type == t);
 		return h->st[key];
 	}
 
@@ -121,7 +122,8 @@ SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* n
 				default: 
 					assert(0);
 			}
-			return tmp;
+			assert(tmp->next->type == t);
+			return tmp->next;
 		}
 	}
 }
@@ -148,12 +150,11 @@ SymbolTableEntry* insertTo(int scope, const char* name, enum SymbolTableType t, 
 			l_tmp->st[i]->hasData = 0;
 		}
 	}
-
 	return insertToHashTable(l_tmp, scope, name, t, line);
 }
 
 SymbolTableEntry* insert(int scope, const char* name, int line, enum SymbolTableType t) {
-	return insertTo(scope, name, t, line);
+	return insertTo(scope, name, t, line);;
 }
 
 void printSymbolTable() {
