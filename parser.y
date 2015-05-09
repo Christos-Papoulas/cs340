@@ -19,11 +19,13 @@
 %}
 
 %union {
-	char*		stringValue;
-	int			intValue;
-	double		realValue;
-	struct expr* exprValue;
-	struct func_t_s*		funcValue;
+	char*				stringValue;
+	int					intValue;
+	double				realValue;
+	struct expr*		exprValue;
+	struct for_t_s* 	forValue;
+	struct func_t_s*	funcValue;
+	struct special_t_s*	specValue;
 }
 
 %start program
@@ -87,12 +89,34 @@
 %type <exprValue> funcdef
 %type <exprValue> funcprefix
 %type <exprValue> funcname
+%type <exprValue> call
+
 %type <funcValue> elist
 %type <funcValue> elists
-%type <exprValue> call
 %type <funcValue> methodcall
 %type <funcValue> normcall
 %type <funcValue> callsuffix
+
+%type <intValue> ifprefix
+%type <intValue> elseprefix
+%type <intValue> whilestart
+%type <intValue> whilecond
+%type <intValue> M
+%type <intValue> N
+
+%type <forValue> forprefix
+
+%type <specValue> loopstmt
+%type <specValue> stmt
+%type <specValue> stmts
+%type <specValue> breakstmt
+%type <specValue> continuestmt
+%type <specValue> loopstart
+%type <specValue> whilestmt
+%type <specValue> ifstmt 
+%type <specValue> forstmt
+%type <specValue> returnstmt
+%type <specValue> block
 
 %left ASSIGN
 %left AND
@@ -109,24 +133,103 @@
 
 %%
 
-program:	stmts stmt {fprintf(stderr, "program -> stmts stmt\n");}
-			|/* empty */ {fprintf(stderr, "program -> empty\n");}
+program:	stmts {fprintf(stderr, "program -> stmts\n");}
+			//|/* empty */ {fprintf(stderr, "program -> empty\n");}
 			;
 
-stmts:		stmts stmt {fprintf(stderr, "stmts -> stmts stmt\n");}
-			|/* empty */ {fprintf(stderr, "stmts -> empty\n");}
+stmts:		stmts stmt 
+			{
+				$$ = malloc(sizeof(special_t));
+				special_t* skata = $$;
+				list* skata1 = $1 ? $1->breaklist : NULL;
+				list* skata2 = $2 ? $2->breaklist : NULL;
+				$$->breaklist = merge(
+					skata1,
+					skata2
+				);
+				$$->contlist = merge(
+					$1 ? $1->contlist : NULL,
+					$2 ? $2->contlist : NULL
+				);
+
+				fprintf(stderr, "stmts -> stmts stmt\n");
+			}
+			|/* empty */ 
+			{
+				$$ = NULL;
+				fprintf(stderr, "stmts -> empty\n");
+			}
 			;
 
-stmt:		expr SEMICOLON {fprintf(stderr, "stmt -> expr ;\n");}
-			|ifstmt {fprintf(stderr, "stmt -> ifstmt\n");}
-			|whilestmt {fprintf(stderr, "stmt -> whilestmt\n");}
-			|forstmt {fprintf(stderr, "stmt -> forstmt\n");}
-			|returnstmt {fprintf(stderr, "stmt -> returnstmt\n");}
-			|BREAK SEMICOLON {fprintf(stderr, "stmt -> break ;\n");}	
-			|CONTINUE SEMICOLON {fprintf(stderr, "stmt -> continue ;\n");}
-			|block {fprintf(stderr, "stmt -> block\n");}
-			|funcdef {fprintf(stderr, "stmt -> funcdef\n");}
-			|SEMICOLON {fprintf(stderr, "stmt -> ;\n");}
+stmt:		expr SEMICOLON {
+				$$ = NULL;
+				fprintf(stderr, "stmt -> expr ;\n");
+			}
+			|ifstmt 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> ifstmt\n");
+			}
+			|whilestmt 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> whilestmt\n");
+			}
+			|forstmt 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> forstmt\n");
+			}
+			|returnstmt 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> returnstmt\n");
+			}
+			|breakstmt 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> breakstmt ;\n");
+			}	
+			|continuestmt 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> continuestmt ;\n");
+			}
+			|block 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> block\n");
+			}
+			|funcdef 
+			{
+				$$ = $1;
+				fprintf(stderr, "stmt -> funcdef\n");
+			}
+			|SEMICOLON 
+			{
+				$$ = NULL;
+				fprintf(stderr, "stmt -> ;\n");
+			}
+			;
+
+breakstmt:	BREAK SEMICOLON
+			{
+				$$ = malloc(sizeof(special_t));
+				$$->breaklist = newlist(nextquad());
+				$$->contlist = NULL;
+				emit(jump, 0, 0, 0, 0, yylineno);
+				fprintf(stderr, "breakstmt -> BREAK ;\n");
+			}
+			;
+
+continuestmt: CONTINUE SEMICOLON 
+			{
+				$$ = malloc(sizeof(special_t));
+				$$->contlist = newlist(nextquad());
+				$$->breaklist = NULL;
+				emit(jump, 0, 0, 0, 0, yylineno);
+				fprintf(stderr, "continuestmt -> continue ;\n");
+			}
 			;
 
 expr:		assignexpr {
@@ -224,8 +327,29 @@ expr:		assignexpr {
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
 				
 				fprintf(stderr, "expr -> expr != expr\n");}
-			|expr AND expr {fprintf(stderr, "expr -> expr AND expr\n");}
-			|expr OR expr {fprintf(stderr, "expr -> expr OR expr\n");}
+			|expr AND expr 
+			{
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit(and, $1, $3, $$, 0, yylineno);
+				/*$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit(if_eq, $1, newexpr_constbool(0), newexpr_constlabel(nextquad() + 3), 0, yylineno);
+				emit(if_eq, $3, newexpr_constbool(0), newexpr_constlabel(nextquad() + 2), 0, yylineno);
+				emit(assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit(jump, NULL, NULL, newexpr_constlabel(nextquad() + 1), 0, yylineno);
+				emit(assign, newexpr_constbool(0), NULL, $$, 0, yylineno);
+				*/
+				//emit(and, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr AND expr\n");
+			}
+			|expr OR expr 
+			{
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+				emit(or, $1, $3, $$, 0, yylineno);
+				fprintf(stderr, "expr -> expr OR expr\n");
+			}
 			|term {
 				$$ = $1;
 				fprintf(stderr, "expr -> term\n");
@@ -598,6 +722,7 @@ block:		LEFT_BRACES
 			{
 				deactivateScope (getScope());
 				scopeDown();
+				$$ = $3;
 				fprintf(stderr, "block -> [stmts] \n");
 			}
 			;
@@ -745,18 +870,153 @@ ids:		COMMA ID
 			|/*empty*/ {fprintf(stderr, "ids -> empty\n");}
 			;
 
-ifstmt:		ifprefix stmt {fprintf(stderr, "ifstmt -> ifprefix stmt\n");}
-			| ifprefix stmt ELSE stmt{fprintf(stderr, "ifstmt -> ifprefix stmt ELSE stmt\n");}
+ifstmt:		ifprefix stmt 
+			{
+				patchlabel($1, nextquad());
+				fprintf(stderr, "ifstmt -> ifprefix stmt\n");
+				$$ = $2;
+			}
+			| ifprefix stmt elseprefix stmt
+			{
+				patchlabel($1, $3 + 1);
+				patchlabel($3, nextquad());
+
+				$$ = malloc(sizeof(special_t));
+				$$->breaklist = merge(
+					$2 ? $2->breaklist : NULL,
+					$4 ? $4->breaklist : NULL
+				);
+				$$->contlist = merge(
+					$2 ? $2->contlist : NULL, 
+					$4 ? $4->contlist : NULL
+				);
+
+				fprintf(stderr, "ifstmt -> ifprefix stmt elseprefix stmt\n");
+			}
 			;
 
-ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS{fprintf(stderr, "ifprefix -> IF (expr)\n");}
+elseprefix:	ELSE 
+			{
+				$$ = nextquad();
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				fprintf(stderr, "elseprefix -> ELSE \n");
+			}
 			;
 
-whilestmt:	WHILE LEFT_PARENTHESIS expr RIGHT_PARENTHESIS stmt {fprintf(stderr, "whilestmt -> WHILE (expr) stmt\n");}
+ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
+			{
+				emit(if_eq, $3, newexpr_constbool(1), newexpr_constlabel(nextquad()+2), 0 ,yylineno);
+				$$ = nextquad();
+				emit(jump, 0, 0, 0, 0, yylineno);
+				fprintf(stderr, "ifprefix -> IF (expr)\n");
+			}
 			;
 
-forstmt:	FOR LEFT_PARENTHESIS elist SEMICOLON expr SEMICOLON elist RIGHT_PARENTHESIS stmt {fprintf(stderr, "forstmt -> FOR (elist; expr; elist) stmt\n");}
+whilestmt:	whilestart whilecond loopstmt 
+			{
+				list* tmp;
+				if($3){
+					for(tmp = $3->breaklist; tmp; tmp = tmp->next) {
+						patchlabel(tmp->label, nextquad() + 1);
+					}
+					for(tmp = $3->contlist; tmp; tmp = tmp->next) {
+						patchlabel(tmp->label, $1);
+					}
+				}
+
+				emit(jump, 0, 0, newexpr_constlabel($1), 0, yylineno);
+
+				patchlabel($2, nextquad());
+				
+				$$ = $3;
+
+				fprintf(stderr, "whilestmt -> whilestart whilecond loopstmt\n");
+			}
 			;
+
+whilestart: WHILE 
+			{
+				$$ = nextquad();
+				fprintf(stderr, "whilestart -> WHILE\n");
+			}
+			;
+
+whilecond:	LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
+			{
+				emit(if_eq, $2, newexpr_constbool(1), newexpr_constlabel(nextquad()+2), 0 ,yylineno);
+				$$ = nextquad();
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				fprintf(stderr, "whilecond -> ( expr )\n");
+			}
+			;
+
+loopstmt:	loopstart stmt loopend 
+			{
+				$$ = $2;
+				fprintf(stderr, "loopstmt -> loopstart stmt loopend\n");
+			}
+			;
+
+loopstart:	/* empty */
+			{
+				loopcounter++;
+				fprintf(stderr, "loopstart -> empty\n");
+			}
+			;
+
+loopend:	/* empty */
+			{
+				loopcounter--;
+				fprintf(stderr, "loopend -> empty\n");
+			}
+			;
+
+forstmt:	forprefix N elist RIGHT_PARENTHESIS N loopstmt N
+			{
+				list* tmp;
+				for(tmp = $6->breaklist; tmp; tmp = tmp->next) {
+					patchlabel(tmp->label, nextquad());
+				}
+				for(tmp = $6->contlist; tmp; tmp = tmp->next) {
+					patchlabel(tmp->label, $2 + 1);
+				}
+
+				patchlabel($1->enter, $5 + 1);
+				patchlabel($2, nextquad());
+				patchlabel($5, $1->test);
+				patchlabel($7, $2 + 1);
+
+				$$ = $6;
+				fprintf(stderr, "forstmt -> forprefix N elist) N stmt N\n");
+			}
+			;
+
+forprefix:	FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON
+			{
+				$$ = malloc(sizeof(for_t));
+				$$->test = $5;
+				$$->enter = nextquad();
+				fprintf(stderr, "forprefix -> FOR (elist; expr;\n");
+			}
+
+M:			/* empty */ 
+			{
+				$$ = nextquad();
+				fprintf(stderr, "M -> empty\n");
+			}
+			;
+
+N:			/* empty */ 
+			{
+				$$ = nextquad();
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				fprintf(stderr, "N -> empty\n");
+			}
+			;
+
 
 returnstmt: RETURN expr SEMICOLON{fprintf(stderr, "returnstmt -> return expr;\n");}
 			|RETURN SEMICOLON{fprintf(stderr, "returnstmt -> return; \n");}

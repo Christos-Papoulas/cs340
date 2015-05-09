@@ -11,6 +11,7 @@ int functionLocalOffset = 0;
 int formalArgOffset = 0;
 int scopeSpaceCounter = 0;
 
+int loopcounter = 0;
 
 void expand () {
 	assert (total == currQuad);
@@ -104,7 +105,8 @@ void restorecurrscopeoffset (int n) {
 
 void patchlabel (int quadNo, int label) {
 	assert (quadNo < currQuad);
-	(&quads[quadNo])->label = label;
+	if(!(&quads[quadNo])->result)
+		(&quads[quadNo])->result = newexpr_constlabel(label);
 }
 
 expr* lvalue_expr (SymbolTableEntry* sym) {
@@ -262,6 +264,27 @@ void checkuminus(expr* e) {
 
 }
 
+list* newlist(int l) {
+	list* new = malloc(sizeof(list));
+	assert(new);
+
+	new->label = l;
+	new->next = NULL;
+}
+
+list* merge(list* a, list* b) {
+	list*  tmp = NULL;
+	if(!a) {
+		return b;
+	}
+	if(!b){
+		return a;
+	}
+	for(tmp = a; tmp->next; tmp = tmp->next)
+		;
+	tmp->next = b;
+	return a;
+}
 void printArguments (expr* arg) {
 	if(arg == NULL)
 		return ;
@@ -301,6 +324,7 @@ void printArguments (expr* arg) {
 }
 void printTheQuadsMyLove(){
 	int i;
+	putchar('\n');
 	for (i=0; i < currQuad; i++) {
 		fprintf(stdout, "%d: ", i);
 		printOperation((&quads[i])->op);

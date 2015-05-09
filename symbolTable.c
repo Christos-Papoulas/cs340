@@ -319,8 +319,9 @@ void deactivateScope (int scope) {
 	int s, i;
 
 	for (l_tmp = stl, s = 0; ; s++) {
-		if(s == scope)
+		if(s == scope || l_tmp)
 			break;
+
 		l_tmp = l_tmp->next;
 		
 	}

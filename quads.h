@@ -12,6 +12,7 @@
 #define NEW_SIZE (EXPAND_SIZE*sizeof(quad)+CURR_SIZE)
 
 extern int yylineno;
+extern int loopcounter;
 
 typedef enum iopcode {
 	assign = 0, add, sub, 
@@ -95,6 +96,25 @@ typedef struct func_t_s {
 	struct func_t_s* next;
 } func_t;
 
+typedef struct for_t_s {
+	int test;
+	int enter;
+} for_t;
+
+typedef struct list_s
+{
+	int label;
+	struct list_s* next;	
+} list;
+
+typedef struct special_t_s
+{
+	list* breaklist;
+	list* contlist;
+	int loopcounter;	
+} special_t;
+
+
 expr* lvalue_expr (SymbolTableEntry* sym);
 expr* newexpr (expr_t t);
 expr* newexpr_conststring (char* s);
@@ -124,8 +144,8 @@ expr* make_call(expr* , func_t* );
 func_t* add_front(func_t* , expr* );
 void checkuminus(expr* );
 
-
-
+list* newlist(int );
+list* merge(list*, list* );
 
 SymbolTableEntry* newtemp();
 
