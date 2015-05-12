@@ -519,6 +519,7 @@ lvalue:		ID
 					if (tmp1 && tmp1->isActive /*(tmp1->type==E_USERFUNC)*/) {
 						toBeInserted = 0;
 						$$ = lvalue_expr(tmp1);
+						break;
 					}
 				}
 				// $$ = strdup(yylval.stringValue);
@@ -533,10 +534,10 @@ lvalue:		ID
 				if ($$ == NULL) {
 						if (newvar) {
 							$$ = lvalue_expr(newvar);
-						} else 
+						} else if(tmp)
 							$$ = lvalue_expr(tmp);
 				}
-
+				assert($$ != NULL);
 				fprintf(rules, "lvalue -> ID %s \n", yylval.stringValue);
 			}
 			|LOCAL ID 

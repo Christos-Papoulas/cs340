@@ -98,6 +98,7 @@ SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* n
 				assert(0);
 		}
 		assert(h->st[key]->type == t);
+		assert(h->st[key]->isActive);
 		return h->st[key];
 	}
 
@@ -127,6 +128,7 @@ SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* n
 					assert(0);
 			}
 			assert(tmp->next->type == t);
+			assert(tmp->next->isActive);
 			return tmp->next;
 		}
 	}
@@ -319,6 +321,7 @@ void scopeDown() {
 }
 
 void deactivateScope (int scope) {
+	assert(scope != 0);
 	assert (stl != NULL);
 	SymbolTableList* l_tmp;
 	SymbolTableEntry* h_tmp;
@@ -332,7 +335,7 @@ void deactivateScope (int scope) {
 		
 	}
 
-	if (l_tmp) {
+	if (l_tmp && s != 0) {
 		for (i=0; i<HASH_SIZE; i++) {
 			l_tmp->st[i]->isActive = 0;
 			for (h_tmp = l_tmp->st[i]->next; h_tmp; h_tmp = h_tmp->next) {
