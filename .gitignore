@@ -1,5 +1,6 @@
 alpha.c
 parser.c
+parser.output
 alpha.exe.stackdump
 lex.log
 # Object files
