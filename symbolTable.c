@@ -71,6 +71,10 @@ unsigned long hashFunction(const char *str) {
 SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* name, enum SymbolTableType t, int line) {
 	int key = hashFunction(name);
 	SymbolTableEntry* tmp;
+	if(!h->st[key]){
+		h->st[key] = malloc(sizeof(SymbolTableEntry));
+		h->st[key]->hasData = 0;
+	}
 	if(!h->st[key]->hasData) {
 		h->st[key]->isActive = 1;
 		h->st[key]->hasData = 1;

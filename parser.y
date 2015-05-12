@@ -214,6 +214,7 @@ stmt:		expr SEMICOLON {
 			}
 			|funcdef 
 			{
+				$$ = NULL;
 				fprintf(rules, "stmt -> funcdef\n");
 			}
 			|SEMICOLON 
@@ -490,6 +491,7 @@ primary:	lvalue
 
 lvalue:		ID 
 			{
+				$$ = NULL;
 				SymbolTableEntry* tmp = lookUp(getScope(),yylval.stringValue);
 				
 				SymbolTableEntry* newvar = NULL;
@@ -514,8 +516,9 @@ lvalue:		ID
 
 				for (i=0; i<=getScope(); i++) {
 					SymbolTableEntry* tmp1 = lookUp(i, yylval.stringValue);
-					if (tmp1 && tmp1->isActive && (tmp1->type==E_USERFUNC)) {
+					if (tmp1 && tmp1->isActive /*(tmp1->type==E_USERFUNC)*/) {
 						toBeInserted = 0;
+						$$ = lvalue_expr(tmp1);
 					}
 				}
 				// $$ = strdup(yylval.stringValue);
@@ -527,10 +530,12 @@ lvalue:		ID
 					}
 				}
 
-				if (newvar) {
-					$$ = lvalue_expr(newvar);
-				} else 
-					$$ = lvalue_expr(tmp);
+				if ($$ == NULL) {
+						if (newvar) {
+							$$ = lvalue_expr(newvar);
+						} else 
+							$$ = lvalue_expr(tmp);
+				}
 
 				fprintf(rules, "lvalue -> ID %s \n", yylval.stringValue);
 			}
@@ -555,7 +560,7 @@ lvalue:		ID
 				} else 
 					$$ = lvalue_expr(tmp);
 
-				fprintf(rules, "lvalue -> LOCAL ID\n");
+				fprintf(rules, "lvalue -> LOCAL ID %s line:%d\n", yylval.stringValue,yylineno);
 			}
 			|DOUBLE_COLON ID 
 			{
@@ -971,7 +976,7 @@ ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
 
-				fprintf(rules, "ifprefix -> IF (expr)\n");
+				fprintf(rules, "ifprefix -> IF (expr) line:%d\n", yylineno);
 			}
 			;
 
@@ -1113,7 +1118,7 @@ int yyerror (char* yaccProvidedMessage) {
 
 int main (int argc, char** argv) {
 	out = fopen("lex.log", "w");
-	rules = fopen("rules.log", "w");
+	rules = stderr;//fopen("rules.log", "w");
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "Cannot read file: %s \n", argv[1]);
