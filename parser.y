@@ -350,9 +350,13 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 			}
 			|NOT expr 
 			{
+				$$ = newexpr(booleanexpr_e);
+				$$->sym = newtemp();
+
 				$$->truelist = $2->falselist;
 				$$->falselist = $2->truelist;
 
+				emit(not, $2, 0, $$, 0, yylineno);
 				fprintf(rules, "term -> ! expr\n");
 			}
 			|INCREMENT lvalue 
@@ -1051,13 +1055,15 @@ loopend:	/* empty */
 forstmt:	forprefix N elist RIGHT_PARENTHESIS N loopstmt N
 			{
 				list* tmp;
-				for(tmp = $6->breaklist; tmp; tmp = tmp->next) {
-					patchlabel(tmp->label, nextquad());
-				}
-				for(tmp = $6->contlist; tmp; tmp = tmp->next) {
-					patchlabel(tmp->label, $2 + 1);
-				}
+				if($6){
+					for(tmp = $6->breaklist; tmp; tmp = tmp->next) {
+						patchlabel(tmp->label, nextquad());
+					}
 
+					for(tmp = $6->contlist; tmp; tmp = tmp->next) {
+						patchlabel(tmp->label, $2 + 1);
+					}
+				}
 				patchlabel($1->enter, $5 + 1);
 				patchlabel($2, nextquad());
 				patchlabel($5, $1->test);
@@ -1103,11 +1109,15 @@ returnstmt: RETURN expr SEMICOLON
 				if(t)
 					$2 = t;
 				emit(ret, 0, 0, $2, 0, yylineno);
+
+				$$ = NULL;
 				fprintf(rules, "returnstmt -> return expr;\n");
 			}
 			|RETURN SEMICOLON
 			{
 				emit(ret, 0, 0, 0, 0, yylineno);
+
+				$$ = NULL;
 
 				fprintf(rules, "returnstmt -> return; \n");
 			}

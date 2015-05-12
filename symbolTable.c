@@ -260,6 +260,7 @@ void printSymbolTable() {
 			}
 		}
 	}
+	fclose(symtable);
 }
 
 SymbolTableEntry* lookUp(int scope, const char* name) {
@@ -329,8 +330,8 @@ void deactivateScope (int scope) {
 	SymbolTableEntry* h_tmp;
 	int s, i;
 
-	for (l_tmp = stl, s = 0; ; s++) {
-		if(s == scope || l_tmp)
+	for (l_tmp = stl, s = 0; 1; s++) {
+		if(s == scope || !l_tmp)
 			break;
 
 		l_tmp = l_tmp->next;
