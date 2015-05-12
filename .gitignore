@@ -3,6 +3,8 @@ parser.c
 parser.output
 alpha.exe.stackdump
 lex.log
+rules.log
+symtable.log
 # Object files
 *.o
 *.ko

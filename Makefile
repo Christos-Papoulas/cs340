@@ -8,7 +8,7 @@ bonus: lex/lexeme.c
 	gcc -o lexeme lex/lexeme.c
 	
 clean: 
-	rm -rfv alpha alpha.c lex.log *.output parser.c parser.h
+	rm -rfv alpha alpha.c lex.log rules.log symtable.log *.output parser.c parser.h
 
 
 	

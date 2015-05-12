@@ -14,6 +14,7 @@
 	extern char* yytext;
 	extern FILE* yyin;
 	extern FILE* out;
+	FILE* rules;
 
 	extern struct node* top; // for functions!
 %}
@@ -133,8 +134,7 @@
 
 %%
 
-program:	stmts {fprintf(stderr, "program -> stmts\n");}
-			//|/* empty */ {fprintf(stderr, "program -> empty\n");}
+program:	stmts {fprintf(rules, "program -> stmts\n");}
 			;
 
 stmts:		stmts stmt 
@@ -152,12 +152,12 @@ stmts:		stmts stmt
 					$2 ? $2->contlist : NULL
 				);
 
-				fprintf(stderr, "stmts -> stmts stmt\n");
+				fprintf(rules, "stmts -> stmts stmt\n");
 			}
 			|/* empty */ 
 			{
 				$$ = NULL;
-				fprintf(stderr, "stmts -> empty\n");
+				fprintf(rules, "stmts -> empty\n");
 			}
 			;
 
@@ -167,52 +167,52 @@ stmt:		expr SEMICOLON {
 				patch($1);
 
 
-				fprintf(stderr, "stmt -> expr ;\n");
+				fprintf(rules, "stmt -> expr ;\n");
 			}
 			|ifstmt 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> ifstmt\n");
+				fprintf(rules, "stmt -> ifstmt\n");
 			}
 			|whilestmt 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> whilestmt\n");
+				fprintf(rules, "stmt -> whilestmt\n");
 			}
 			|forstmt 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> forstmt\n");
+				fprintf(rules, "stmt -> forstmt\n");
 			}
 			|returnstmt 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> returnstmt\n");
+				fprintf(rules, "stmt -> returnstmt\n");
 			}
 			|breakstmt 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> breakstmt ;\n");
+				fprintf(rules, "stmt -> breakstmt ;\n");
 			}	
 			|continuestmt 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> continuestmt ;\n");
+				fprintf(rules, "stmt -> continuestmt ;\n");
 			}
 			|block 
 			{
 				$$ = $1;
-				fprintf(stderr, "stmt -> block\n");
+				fprintf(rules, "stmt -> block\n");
 			}
 			|funcdef 
 			{
 				//$$ = $1;
-				fprintf(stderr, "stmt -> funcdef\n");
+				fprintf(rules, "stmt -> funcdef\n");
 			}
 			|SEMICOLON 
 			{
 				$$ = NULL;
-				fprintf(stderr, "stmt -> ;\n");
+				fprintf(rules, "stmt -> ;\n");
 			}
 			;
 
@@ -222,7 +222,7 @@ breakstmt:	BREAK SEMICOLON
 				$$->breaklist = newlist(nextquad());
 				$$->contlist = NULL;
 				emit(jump, 0, 0, 0, 0, yylineno);
-				fprintf(stderr, "breakstmt -> BREAK ;\n");
+				fprintf(rules, "breakstmt -> BREAK ;\n");
 			}
 			;
 
@@ -232,44 +232,44 @@ continuestmt: CONTINUE SEMICOLON
 				$$->contlist = newlist(nextquad());
 				$$->breaklist = NULL;
 				emit(jump, 0, 0, 0, 0, yylineno);
-				fprintf(stderr, "continuestmt -> continue ;\n");
+				fprintf(rules, "continuestmt -> continue ;\n");
 			}
 			;
 
 expr:		assignexpr {
 				$$ = $1;
-				fprintf(stderr, "expr -> assignexpr\n");
+				fprintf(rules, "expr -> assignexpr\n");
 			}
 			|expr PLUS expr {
 				$$ = newexpr(arithexpr_e);
 				$$->sym = newtemp();
 				emit(add, $1, $3, $$, 0, yylineno);
 
-				fprintf(stderr, "expr -> expr + expr\n");
+				fprintf(rules, "expr -> expr + expr\n");
 			}
 			|expr MINUS expr {
 				$$ = newexpr(arithexpr_e);
 				$$->sym = newtemp();
 				emit(sub, $1, $3, $$, 0, yylineno);
-				fprintf(stderr, "expr -> expr - expr\n");
+				fprintf(rules, "expr -> expr - expr\n");
 			}
 			|expr MULTIPLIES expr {
 				$$ = newexpr(arithexpr_e);
 				$$->sym = newtemp();
 				emit(mul, $1, $3, $$, 0, yylineno);
-				fprintf(stderr, "expr -> expr * expr\n");
+				fprintf(rules, "expr -> expr * expr\n");
 			}
 			|expr DIVIDES expr {
 				$$ = newexpr(arithexpr_e);
 				$$->sym = newtemp();
 				emit(divi, $1, $3, $$, 0, yylineno);
-				fprintf(stderr, "expr -> expr / expr\n");
+				fprintf(rules, "expr -> expr / expr\n");
 			}
 			|expr MODULUS expr {
 				$$ = newexpr(arithexpr_e);
 				$$->sym = newtemp();
 				emit(mod, $1, $3, $$, 0, yylineno);
-				fprintf(stderr, "expr -> expr mod expr\n");
+				fprintf(rules, "expr -> expr mod expr\n");
 			}
 			|expr GREATER expr {
 				assert($1!=NULL && $3!=NULL);
@@ -285,7 +285,7 @@ expr:		assignexpr {
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
-				fprintf(stderr, "expr -> expr > expr\n");
+				fprintf(rules, "expr -> expr > expr\n");
 			}
 			|expr GREATER_EQUAL expr {
 				assert($1!=NULL && $3!=NULL);
@@ -302,7 +302,7 @@ expr:		assignexpr {
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
-				fprintf(stderr, "expr -> expr >= expr\n");
+				fprintf(rules, "expr -> expr >= expr\n");
 			}
 			|expr LESS expr {
 				assert($1!=NULL && $3!=NULL);
@@ -317,7 +317,7 @@ expr:		assignexpr {
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
-				fprintf(stderr, "expr -> expr < expr\n");}
+				fprintf(rules, "expr -> expr < expr\n");}
 			|expr LESS_EQUAL expr {
 				assert($1!=NULL && $3!=NULL);
 				$$ = newexpr(booleanexpr_e);
@@ -333,7 +333,7 @@ expr:		assignexpr {
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
-				fprintf(stderr, "expr -> expr <= expr\n");
+				fprintf(rules, "expr -> expr <= expr\n");
 			}
 			|expr EQUAL expr {
 				assert($1!=NULL && $3!=NULL);
@@ -351,7 +351,7 @@ expr:		assignexpr {
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
-				fprintf(stderr, "expr -> expr == expr\n");
+				fprintf(rules, "expr -> expr == expr\n");
 			}
 			|expr INEQUAL expr {
 				assert($1!=NULL && $3!=NULL);
@@ -369,7 +369,7 @@ expr:		assignexpr {
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
 				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
-				fprintf(stderr, "expr -> expr != expr\n");}
+				fprintf(rules, "expr -> expr != expr\n");}
 			|expr AND M expr 
 			{
 				backpatch($1->truelist, $3);
@@ -380,7 +380,7 @@ expr:		assignexpr {
 				$$->sym = newtemp();
 				emit(and, $1, $3, $$, 0, yylineno);*/
 				
-				fprintf(stderr, "expr -> expr AND expr\n");
+				fprintf(rules, "expr -> expr AND expr\n");
 			}
 			|expr OR M expr 
 			{
@@ -390,11 +390,11 @@ expr:		assignexpr {
 				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit(or, $1, $3, $$, 0, yylineno);*/
-				fprintf(stderr, "expr -> expr OR expr\n");
+				fprintf(rules, "expr -> expr OR expr\n");
 			}
 			|term {
 				$$ = $1;
-				fprintf(stderr, "expr -> term\n");
+				fprintf(rules, "expr -> term\n");
 			}
 			;		
 			
@@ -405,7 +405,7 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 				if(t = patch($2))
 					$$ = t;
 
-				fprintf(stderr, "term -> (expr)\n");
+				fprintf(rules, "term -> (expr)\n");
 			}
 			|MINUS expr 
 			{
@@ -414,7 +414,7 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 				$$->sym = newtemp();
 				emit(uminus, $2, NULL, $$, 0, yylineno);
 
-				fprintf(stderr, "term -> - expr\n");
+				fprintf(rules, "term -> - expr\n");
 			}
 			|NOT expr 
 			{
@@ -424,7 +424,7 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 				$$->sym = newtemp();
 				emit(not, $2, NULL, $$, 0, yylineno);*/
 
-				fprintf(stderr, "term -> ! expr\n");
+				fprintf(rules, "term -> ! expr\n");
 			}
 			|INCREMENT lvalue 
 			{
@@ -440,7 +440,7 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 					emit(assign, lvalue, NULL, $$, 0, yylineno);
 
 				}
-				fprintf(stderr, "term -> ++lvalue\n");
+				fprintf(rules, "term -> ++lvalue\n");
 			}
 			|lvalue INCREMENT 
 			{
@@ -456,7 +456,7 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 					emit(assign, $1, NULL, $$, 0, yylineno);
 					emit(add, $1, newexpr_constnum("1"), $1, 0, yylineno);
 				}
-				fprintf(stderr, "term -> lvalue++\n");
+				fprintf(rules, "term -> lvalue++\n");
 			}
 			|DECREMENT lvalue 
 			{
@@ -472,7 +472,7 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 					emit(assign, lvalue, NULL, $$, 0, yylineno);
 
 				}
-				fprintf(stderr, "term -> --lvalue\n");
+				fprintf(rules, "term -> --lvalue\n");
 			}
 			|lvalue DECREMENT 
 			{
@@ -488,11 +488,11 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 					emit(assign, $1, NULL, $$, 0, yylineno);
 					emit(sub, $1, newexpr_constnum("1"), $1, 0, yylineno);
 				}
-				fprintf(stderr, "term -> lvalue--\n");
+				fprintf(rules, "term -> lvalue--\n");
 			}
 			|primary {
 				$$ = $1;
-				fprintf(stderr, "term -> primary\n");
+				fprintf(rules, "term -> primary\n");
 			}
 			;
 
@@ -501,7 +501,7 @@ assignexpr: lvalue ASSIGN expr {
 				expr* t;
 				if(t = patch($3))
 					$3 = t;
-				fprintf(stderr, "assignexpr -> lvalue = expr\n");
+				fprintf(rules, "assignexpr -> lvalue = expr\n");
 				
 				if ($1 && $1->sym->type == E_USERFUNC) {
 					if (isLibraryFunction($1->sym->value.funcVal.name)) {
@@ -539,23 +539,23 @@ assignexpr: lvalue ASSIGN expr {
 primary:	lvalue 
 			{
 				$$ = $1;
-				fprintf(stderr, "primary -> lvalue\n");
+				fprintf(rules, "primary -> lvalue\n");
 				
 			}
 			|call 
 			{
-				fprintf(stderr, "primary -> call\n");
+				fprintf(rules, "primary -> call\n");
 			}
-			|objectdef {fprintf(stderr, "primary -> objectdef\n");}
+			|objectdef {fprintf(rules, "primary -> objectdef\n");}
 			|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS 
 			{
 				$$ = newexpr(programfunc_e);
 				$$->sym = $2->sym;
-				fprintf(stderr, "primary -> (funcdef)\n");
+				fprintf(rules, "primary -> (funcdef)\n");
 			}
 			|const 
 			{
-				fprintf(stderr, "primary -> const\n");
+				fprintf(rules, "primary -> const\n");
 				$$ = $1;
 			}
 			;
@@ -604,7 +604,7 @@ lvalue:		ID
 				} else 
 					$$ = lvalue_expr(tmp);
 
-				fprintf(stderr, "lvalue -> ID %s \n", yylval.stringValue);
+				fprintf(rules, "lvalue -> ID %s \n", yylval.stringValue);
 			}
 			|LOCAL ID 
 			{
@@ -627,7 +627,7 @@ lvalue:		ID
 				} else 
 					$$ = lvalue_expr(tmp);
 
-				fprintf(stderr, "lvalue -> LOCAL ID\n");
+				fprintf(rules, "lvalue -> LOCAL ID\n");
 			}
 			|DOUBLE_COLON ID 
 			{
@@ -636,11 +636,11 @@ lvalue:		ID
 					fprintf (stderr, "Error at line %d: undefined reference to global variable %s \n", yylineno, yylval.stringValue);
 					exit(-1);
 				}
-				fprintf(stderr, "lvalue -> ::ID\n");
+				fprintf(rules, "lvalue -> ::ID\n");
 				$$ = lvalue_expr(tmp);
 			}
 			|member {
-				fprintf(stderr, "lvalue -> member\n");
+				fprintf(rules, "lvalue -> member\n");
 				$$ = $1;
 			}
 			;
@@ -650,7 +650,7 @@ member:		lvalue DOT ID {
 				$1->index = newexpr_conststring($3);
 				$$ = emit_iftableitem($1);
 
-				fprintf(stderr, "member -> lvalue.id\n");
+				fprintf(rules, "member -> lvalue.id\n");
 			}
 			|lvalue LEFT_BRACKETS expr RIGHT_BRACKETS 
 			{
@@ -663,23 +663,23 @@ member:		lvalue DOT ID {
 				member->index = $3;
 				$$ = member;
 
-				fprintf(stderr, "member -> lvalue [expr]\n");
+				fprintf(rules, "member -> lvalue [expr]\n");
 			}
 			|call DOT ID {
-				fprintf(stderr, "member -> call.id\n");
+				fprintf(rules, "member -> call.id\n");
 			}
 			|call LEFT_BRACKETS expr RIGHT_BRACKETS 
 			{
 				patch($3);
 
-				fprintf(stderr, "member -> call [expr]\n");
+				fprintf(rules, "member -> call [expr]\n");
 			}
 			;
 
 call:		call LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
 			{
 				$$ = make_call($1, $3);
-				fprintf(stderr, "call -> call (elist)\n");
+				fprintf(rules, "call -> call (elist)\n");
 			}
 			|lvalue callsuffix 
 			{
@@ -692,26 +692,26 @@ call:		call LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 					$2->method = 0;
 				}
 				$$ = make_call($1, $2);
-				fprintf(stderr, "call -> lvalue callsuffix\n");
+				fprintf(rules, "call -> lvalue callsuffix\n");
 			}
 			|LEFT_PARENTHESIS funcdef RIGHT_PARENTHESIS LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
 			{
 				expr* func = newexpr(programfunc_e);
 				func->sym = $2->sym;
 				$$ = make_call(func, $5);
-				fprintf(stderr, "call -> (functdef) (elist)\n");
+				fprintf(rules, "call -> (functdef) (elist)\n");
 			}
 			;
 
 callsuffix:	normcall 
 			{
 				$$ = $1;
-				fprintf(stderr, "callsuffix -> normcall\n");
+				fprintf(rules, "callsuffix -> normcall\n");
 			}
 			|methodcall 
 			{
 				$$ = $1;
-				fprintf(stderr, "callsuffix -> methodcall\n");
+				fprintf(rules, "callsuffix -> methodcall\n");
 			}
 			;
 
@@ -722,7 +722,7 @@ normcall:	LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 					$$->method = 0;
 					$$->name = NULL;
 				}
-				fprintf(stderr, "normcall -> (elist)\n");
+				fprintf(rules, "normcall -> (elist)\n");
 			}
 			;
 
@@ -731,7 +731,7 @@ methodcall: DOUBLE_DOT ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 				$$ = $4;
 				$$->method = 1;
 				$$->name = strdup($2);
-				fprintf(stderr, "methodcall -> ..id (elist)\n");
+				fprintf(rules, "methodcall -> ..id (elist)\n");
 			} 
 			;
 
@@ -744,12 +744,12 @@ elist:		expr elists
 				if(t = patch($1))
 					$$->expr = t;
 
-				fprintf(stderr, "elist -> expr elists\n");
+				fprintf(rules, "elist -> expr elists\n");
 			}
 			|/*empt*/
 			{
 				$$ = NULL;
-				fprintf(stderr, "elist -> empty\n");
+				fprintf(rules, "elist -> empty\n");
 			}
 			;
 
@@ -762,24 +762,24 @@ elists:		COMMA expr elists
 				if(t = patch($2))
 					$$->expr = t;
 
-				fprintf(stderr, "elists -> ,expr elists\n");
+				fprintf(rules, "elists -> ,expr elists\n");
 			}
 			|/*empty*/ 
 			{
 				$$ = NULL;
-				fprintf(stderr, "elists -> empty\n");
+				fprintf(rules, "elists -> empty\n");
 			}
 			;
 
-objectdef:	LEFT_BRACKETS elist RIGHT_BRACKETS {fprintf(stderr, "objectdef -> 	[elist]\n");}
-			|LEFT_BRACKETS indexed RIGHT_BRACKETS {fprintf(stderr, "objectdef -> [indexed]\n");}
+objectdef:	LEFT_BRACKETS elist RIGHT_BRACKETS {fprintf(rules, "objectdef -> 	[elist]\n");}
+			|LEFT_BRACKETS indexed RIGHT_BRACKETS {fprintf(rules, "objectdef -> [indexed]\n");}
 			;
 
-indexed:	indexedelem indexeds {fprintf(stderr, "indexed -> indexedelem\n");}
+indexed:	indexedelem indexeds {fprintf(rules, "indexed -> indexedelem\n");}
 			;
 
-indexeds: 	COMMA indexed {fprintf(stderr, "indexeds -> ,indexed\n");}
-			|/*empty*/ {fprintf(stderr, "indexeds -> empty\n");}
+indexeds: 	COMMA indexed {fprintf(rules, "indexeds -> ,indexed\n");}
+			|/*empty*/ {fprintf(rules, "indexeds -> empty\n");}
 			;
 
 indexedelem:LEFT_BRACES expr 
@@ -790,7 +790,7 @@ indexedelem:LEFT_BRACES expr
 			{
 				patch($5);
 
-				fprintf(stderr, "indexdelem -> {expr : expr}\n");
+				fprintf(rules, "indexdelem -> {expr : expr}\n");
 			}
 			;
 
@@ -803,7 +803,7 @@ block:		LEFT_BRACES
 				deactivateScope (getScope());
 				scopeDown();
 				$$ = $3;
-				fprintf(stderr, "block -> [stmts] \n");
+				fprintf(rules, "block -> [stmts] \n");
 			}
 			;
 
@@ -814,7 +814,7 @@ funcdef:	funcprefix funcargs funcbody
 				//functionLocalOffset = pop (functionLocalsStack);
 				$$ = $1;
 				emit (funcend, NULL, NULL, ($1), 0, yylineno);
-				fprintf(stderr, "funcdef -> funcprefix funcargs funcbody \n");
+				fprintf(rules, "funcdef -> funcprefix funcargs funcbody \n");
 			}
 			;
 
@@ -822,14 +822,14 @@ funcargs:	LEFT_PARENTHESIS {scopeUp();} idlist RIGHT_PARENTHESIS
 			{
 				enterscopespace();
 				resetfunctionlocaloffset();
-				fprintf(stderr, "funcargs -> (idlist)\n");
+				fprintf(rules, "funcargs -> (idlist)\n");
 			}
 			;
 
 funcbody:	funcblock
 			{
 				exitscopespace();
-				fprintf(stderr, "funcbody -> funcblock\n");
+				fprintf(rules, "funcbody -> funcblock\n");
 			}
 			;
 
@@ -840,7 +840,7 @@ funcprefix: 	FUNCTION funcname {
 				//push(functionLocalsStack, functionLocalOffset);
 				enterscopespace();
 				resetformalargsoffset();
-				fprintf(stderr, "funcprefix -> FUNCTION funcname\n");
+				fprintf(rules, "funcprefix -> FUNCTION funcname\n");
 			}
 			;
 
@@ -865,7 +865,7 @@ funcname:	ID
 				$$ = newexpr(programfunc_e);
 				$$->sym = new;
 				
-				fprintf(stderr, "funcname -> ID \n");
+				fprintf(rules, "funcname -> ID \n");
 
 			} 
 			|/*empty*/
@@ -873,7 +873,7 @@ funcname:	ID
 				$$ = newexpr(programfunc_e);
 				$$->sym = insert(getScope(), getAFunctionName(), yylineno, E_USERFUNC);
 
-				fprintf(stderr, "funcname -> empty \n");
+				fprintf(rules, "funcname -> empty \n");
 
 			}
 			;
@@ -888,33 +888,33 @@ funcblock: 	LEFT_BRACES
 				deactivateScope (getScope());
 				scopeDown();
 				pop();
-				fprintf(stderr, "funcblock -> [stmts] \n");
+				fprintf(rules, "funcblock -> [stmts] \n");
 			}
 			;
 
 const: 		INTCONST {
 				$$ = newexpr_constnum(yytext);
-				fprintf(stderr, "const -> intconst\n");
+				fprintf(rules, "const -> intconst\n");
 			}
 			|REALCONST {
 				$$ = newexpr_constnum(yytext);
-				fprintf(stderr, "const -> realconst\n");
+				fprintf(rules, "const -> realconst\n");
 			}
 			|STRING {
 				$$ = newexpr_conststring(yytext);
-				fprintf(stderr, "const -> string\n");
+				fprintf(rules, "const -> string\n");
 			}
 			|NIL {
 				$$ = newexpr_constnil ();
-				fprintf(stderr, "const -> nil\n");
+				fprintf(rules, "const -> nil\n");
 			}
 			|TRUE {
 				$$ = newexpr_constbool (1);
-				fprintf(stderr, "const -> true\n");
+				fprintf(rules, "const -> true\n");
 			}
 			|FALSE {
 				$$ = newexpr_constbool (0);
-				fprintf(stderr, "const -> false\n");
+				fprintf(rules, "const -> false\n");
 			}
 			;
 
@@ -927,10 +927,10 @@ idlist:		ID
 				}
 			} ids 
 			{
-				fprintf(stderr, "idlist -> ID ids\n"); 
+				fprintf(rules, "idlist -> ID ids\n"); 
 
 			}
-			|/*empty*/ {fprintf(stderr, "idlist -> empty\n");}
+			|/*empty*/ {fprintf(rules, "idlist -> empty\n");}
 			;
 
 ids:		COMMA ID 
@@ -949,15 +949,15 @@ ids:		COMMA ID
 			}
 			ids
 			{
-				fprintf(stderr, "ids -> COMMA ID ids\n");
+				fprintf(rules, "ids -> COMMA ID ids\n");
 			}
-			|/*empty*/ {fprintf(stderr, "ids -> empty\n");}
+			|/*empty*/ {fprintf(rules, "ids -> empty\n");}
 			;
 
 ifstmt:		ifprefix stmt 
 			{
 				patchlabel($1, nextquad());
-				fprintf(stderr, "ifstmt -> ifprefix stmt\n");
+				fprintf(rules, "ifstmt -> ifprefix stmt\n");
 				$$ = $2;
 			}
 			| ifprefix stmt elseprefix stmt
@@ -975,7 +975,7 @@ ifstmt:		ifprefix stmt
 					$4 ? $4->contlist : NULL
 				);
 
-				fprintf(stderr, "ifstmt -> ifprefix stmt elseprefix stmt\n");
+				fprintf(rules, "ifstmt -> ifprefix stmt elseprefix stmt\n");
 			}
 			;
 
@@ -984,7 +984,7 @@ elseprefix:	ELSE
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
 
-				fprintf(stderr, "elseprefix -> ELSE \n");
+				fprintf(rules, "elseprefix -> ELSE \n");
 			}
 			;
 
@@ -997,7 +997,7 @@ ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
 
-				fprintf(stderr, "ifprefix -> IF (expr)\n");
+				fprintf(rules, "ifprefix -> IF (expr)\n");
 			}
 			;
 
@@ -1019,14 +1019,14 @@ whilestmt:	whilestart whilecond loopstmt
 				
 				$$ = $3;
 
-				fprintf(stderr, "whilestmt -> whilestart whilecond loopstmt\n");
+				fprintf(rules, "whilestmt -> whilestart whilecond loopstmt\n");
 			}
 			;
 
 whilestart: WHILE 
 			{
 				$$ = nextquad();
-				fprintf(stderr, "whilestart -> WHILE\n");
+				fprintf(rules, "whilestart -> WHILE\n");
 			}
 			;
 
@@ -1040,28 +1040,28 @@ whilecond:	LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
 
-				fprintf(stderr, "whilecond -> ( expr )\n");
+				fprintf(rules, "whilecond -> ( expr )\n");
 			}
 			;
 
 loopstmt:	loopstart stmt loopend 
 			{
 				$$ = $2;
-				fprintf(stderr, "loopstmt -> loopstart stmt loopend\n");
+				fprintf(rules, "loopstmt -> loopstart stmt loopend\n");
 			}
 			;
 
 loopstart:	/* empty */
 			{
 				loopcounter++;
-				fprintf(stderr, "loopstart -> empty\n");
+				fprintf(rules, "loopstart -> empty\n");
 			}
 			;
 
 loopend:	/* empty */
 			{
 				loopcounter--;
-				fprintf(stderr, "loopend -> empty\n");
+				fprintf(rules, "loopend -> empty\n");
 			}
 			;
 
@@ -1081,7 +1081,7 @@ forstmt:	forprefix N elist RIGHT_PARENTHESIS N loopstmt N
 				patchlabel($7, $2 + 1);
 
 				$$ = $6;
-				fprintf(stderr, "forstmt -> forprefix N elist) N stmt N\n");
+				fprintf(rules, "forstmt -> forprefix N elist) N stmt N\n");
 			}
 			;
 
@@ -1093,13 +1093,13 @@ forprefix:	FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON
 
 				patch($6);
 
-				fprintf(stderr, "forprefix -> FOR (elist; expr;\n");
+				fprintf(rules, "forprefix -> FOR (elist; expr;\n");
 			}
 
 M:			/* empty */ 
 			{
 				$$ = nextquad();
-				fprintf(stderr, "M -> empty\n");
+				fprintf(rules, "M -> empty\n");
 			}
 			;
 
@@ -1108,7 +1108,7 @@ N:			/* empty */
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
 
-				fprintf(stderr, "N -> empty\n");
+				fprintf(rules, "N -> empty\n");
 			}
 			;
 
@@ -1117,9 +1117,9 @@ returnstmt: RETURN expr SEMICOLON
 			{
 				patch($2);
 
-				fprintf(stderr, "returnstmt -> return expr;\n");
+				fprintf(rules, "returnstmt -> return expr;\n");
 			}
-			|RETURN SEMICOLON{fprintf(stderr, "returnstmt -> return; \n");}
+			|RETURN SEMICOLON{fprintf(rules, "returnstmt -> return; \n");}
 			;
 %%
 
@@ -1131,6 +1131,7 @@ int yyerror (char* yaccProvidedMessage) {
 
 int main (int argc, char** argv) {
 	out = fopen("lex.log", "w");
+	rules = fopen("rules.log", "w");
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "Cannot read file: %s \n", argv[1]);

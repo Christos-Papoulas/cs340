@@ -159,43 +159,45 @@ SymbolTableEntry* insert(int scope, const char* name, int line, enum SymbolTable
 
 void printSymbolTable() {
 	int i;
+	FILE* symtable;
+	symtable = fopen("symtable.log", "w");
 	SymbolTableList* h;
 	SymbolTableEntry* tmp;
 	for (h = stl; h; h = h->next) {
-		printf("-------------- scope: %d --------------\n", h->scope);
-		printf("Active\ttype\tName\tscope\tline\t\n");
+		fprintf(symtable, "-------------- scope: %d --------------\n", h->scope);
+		fprintf(symtable, "Active\ttype\tName\tscope\tline\t\n");
 		for (i=0; i<HASH_SIZE; i++) {
 			if(!h->st) break;
 			if(h->st[i]->hasData) {
-				printf("%d\t", h->st[i]->isActive);
+				fprintf(symtable, "%d\t", h->st[i]->isActive);
 				switch (h->st[i]->type) {
 					case E_GLOBAL:
-						printf("gl\t");
-						printf("%s\t%d\t%d\t\t\t",h->st[i]->value.varVal.name,
+						fprintf(symtable, "gl\t");
+						fprintf(symtable, "%s\t%d\t%d\t\t\t",h->st[i]->value.varVal.name,
 						h->st[i]->value.varVal.scope,
 						h->st[i]->value.varVal.line);
 						break;
 					case E_LOCAL:
-						printf("lo\t");
-						printf("%s\t%d\t%d\t\t\t",h->st[i]->value.varVal.name,
+						fprintf(symtable, "lo\t");
+						fprintf(symtable, "%s\t%d\t%d\t\t\t",h->st[i]->value.varVal.name,
 						h->st[i]->value.varVal.scope,
 						h->st[i]->value.varVal.line);
 						break;
 					case E_FORMAL:
-						printf("fo\t");
-						printf("%s\t%d\t%d\t\t\t",h->st[i]->value.varVal.name,
+						fprintf(symtable, "fo\t");
+						fprintf(symtable, "%s\t%d\t%d\t\t\t",h->st[i]->value.varVal.name,
 						h->st[i]->value.varVal.scope,
 						h->st[i]->value.varVal.line);
 						break;
 					case E_USERFUNC:
-						printf("uf\t");
-						printf("%s\t%d\t%d\t\t\t", h->st[i]->value.funcVal.name,
+						fprintf(symtable, "uf\t");
+						fprintf(symtable, "%s\t%d\t%d\t\t\t", h->st[i]->value.funcVal.name,
 						h->st[i]->value.funcVal.scope,
 						h->st[i]->value.funcVal.line);
 						break;
 					case E_LIBFUNC:
-						printf("lf\t");
-						printf("%s\t%d\t%d\t\t\t", h->st[i]->value.funcVal.name,
+						fprintf(symtable, "lf\t");
+						fprintf(symtable, "%s\t%d\t%d\t\t\t", h->st[i]->value.funcVal.name,
 						h->st[i]->value.funcVal.scope,
 						h->st[i]->value.funcVal.line);
 						break;
@@ -203,41 +205,41 @@ void printSymbolTable() {
 						assert(0);
 
 				}
-
-				putchar('\n');
+				
+				fprintf(symtable, "\n");
 			}
 
 			for (tmp = h->st[i]->next; tmp; tmp = tmp->next) {
 				if(tmp->hasData) {
-					printf("%d\t", tmp->isActive);
+					fprintf(symtable, "%d\t", tmp->isActive);
 					switch (tmp->type) {
 						case E_GLOBAL:
-							printf("gl\t");
-							printf("%s\t%d\t%d\t\t\t",tmp->value.varVal.name,
+							fprintf(symtable, "gl\t");
+							fprintf(symtable, "%s\t%d\t%d\t\t\t",tmp->value.varVal.name,
 							tmp->value.varVal.scope,
 							tmp->value.varVal.line);
 							break;
 						case E_LOCAL:
-							printf("lo\t");
-							printf("%s\t%d\t%d\t\t\t",tmp->value.varVal.name,
+							fprintf(symtable, "lo\t");
+							fprintf(symtable, "%s\t%d\t%d\t\t\t",tmp->value.varVal.name,
 							tmp->value.varVal.scope,
 							tmp->value.varVal.line);
 							break;
 						case E_FORMAL:
-							printf("fo\t");
-							printf("%s\t%d\t%d\t\t\t",tmp->value.varVal.name,
+							fprintf(symtable, "fo\t");
+							fprintf(symtable, "%s\t%d\t%d\t\t\t",tmp->value.varVal.name,
 							tmp->value.varVal.scope,
 							tmp->value.varVal.line);
 							break;
 						case E_USERFUNC:
-							printf("uf\t");
-							printf("%s\t%d\t%d\t\t\t", tmp->value.funcVal.name,
+							fprintf(symtable, "uf\t");
+							fprintf(symtable, "%s\t%d\t%d\t\t\t", tmp->value.funcVal.name,
 							tmp->value.funcVal.scope,
 							tmp->value.funcVal.line);
 							break;
 						case E_LIBFUNC:
-							printf("lf\t");
-							printf("%s\t%d\t%d\t\t\t", tmp->value.funcVal.name,
+							fprintf(symtable, "lf\t");
+							fprintf(symtable, "%s\t%d\t%d\t\t\t", tmp->value.funcVal.name,
 							tmp->value.funcVal.scope,
 							tmp->value.funcVal.line);
 							break;
@@ -245,7 +247,7 @@ void printSymbolTable() {
 							assert(0);
 
 					}
-					putchar('\n');
+					fprintf(symtable, "\n");
 				}
 			}
 		}
