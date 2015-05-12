@@ -47,6 +47,12 @@ typedef enum expr_t {
 	nil_e
 } expr_t;
 
+typedef struct list_s
+{
+	int label;
+	struct list_s* next;	
+} list;
+
 typedef struct expr {
 	expr_t type;
 	SymbolTableEntry* sym;
@@ -57,6 +63,8 @@ typedef struct expr {
 	int labelConst;
 	int iaddress;
 	struct expr* next;
+	list* truelist;
+	list* falselist;
 } expr;
 
 typedef struct quad {
@@ -101,12 +109,6 @@ typedef struct for_t_s {
 	int enter;
 } for_t;
 
-typedef struct list_s
-{
-	int label;
-	struct list_s* next;	
-} list;
-
 typedef struct special_t_s
 {
 	list* breaklist;
@@ -135,10 +137,13 @@ void resetformalargsoffset ();
 void resetfunctionlocaloffset ();
 void restorecurrscopeoffset (int n);
 void patchlabel (int quadNo, int label);
-
+void backpatch(list*, int );
+expr * patch(expr* e);
 
 void emit (iopcode op, expr* arg1, expr* arg2, expr* result, unsigned label, unsigned line);
 int nextquad ();
+
+list* makelist(int );
 
 expr* make_call(expr* , func_t* );
 func_t* add_front(func_t* , expr* );

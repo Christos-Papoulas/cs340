@@ -163,6 +163,10 @@ stmts:		stmts stmt
 
 stmt:		expr SEMICOLON {
 				$$ = NULL;
+								
+				patch($1);
+
+
 				fprintf(stderr, "stmt -> expr ;\n");
 			}
 			|ifstmt 
@@ -202,7 +206,7 @@ stmt:		expr SEMICOLON {
 			}
 			|funcdef 
 			{
-				$$ = $1;
+				//$$ = $1;
 				fprintf(stderr, "stmt -> funcdef\n");
 			}
 			|SEMICOLON 
@@ -240,6 +244,7 @@ expr:		assignexpr {
 				$$ = newexpr(arithexpr_e);
 				$$->sym = newtemp();
 				emit(add, $1, $3, $$, 0, yylineno);
+
 				fprintf(stderr, "expr -> expr + expr\n");
 			}
 			|expr MINUS expr {
@@ -267,87 +272,124 @@ expr:		assignexpr {
 				fprintf(stderr, "expr -> expr mod expr\n");
 			}
 			|expr GREATER expr {
-				assert($1!=NULL && $2!=NULL);
+				assert($1!=NULL && $3!=NULL);
 				$$ = newexpr(booleanexpr_e);
+				$$->truelist = makelist(nextquad());
+				$$->falselist = makelist(nextquad() + 1);
+				emit(if_greater, $1, $3, 0, 0 ,yylineno);
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit (if_greater, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				fprintf(stderr, "expr -> expr > expr\n");
 			}
 			|expr GREATER_EQUAL expr {
-				assert($1!=NULL && $2!=NULL);
+				assert($1!=NULL && $3!=NULL);
+
+				$$ = newexpr(booleanexpr_e);
+				$$->truelist = makelist(nextquad());
+				$$->falselist = makelist(nextquad() + 1);
+				emit(if_greatereq, $1, $3, 0, 0 ,yylineno);
+				emit(jump, 0, 0, 0, 0, yylineno);
+				/*
 				$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit (if_greatereq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				fprintf(stderr, "expr -> expr >= expr\n");
 			}
 			|expr LESS expr {
-				assert($1!=NULL && $2!=NULL);
+				assert($1!=NULL && $3!=NULL);
 				$$ = newexpr(booleanexpr_e);
+				$$->truelist = makelist(nextquad());
+				$$->falselist = makelist(nextquad() + 1);
+				emit(if_less, $1, $3, 0, 0 ,yylineno);
+				emit(jump, 0, 0, 0, 0, yylineno);
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit (if_less, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				fprintf(stderr, "expr -> expr < expr\n");}
 			|expr LESS_EQUAL expr {
-				assert($1!=NULL && $2!=NULL);
+				assert($1!=NULL && $3!=NULL);
 				$$ = newexpr(booleanexpr_e);
+				$$->truelist = makelist(nextquad());
+				$$->falselist = makelist(nextquad() + 1);
+				emit(if_lesseq, $1, $3, 0, 0 ,yylineno);
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit (if_lesseq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
 				fprintf(stderr, "expr -> expr <= expr\n");
 			}
 			|expr EQUAL expr {
-				assert($1!=NULL && $2!=NULL);
+				assert($1!=NULL && $3!=NULL);
+
 				$$ = newexpr(booleanexpr_e);
+				$$->truelist = makelist(nextquad());
+				$$->falselist = makelist(nextquad() + 1);
+				emit(if_eq, $1, $3, 0, 0 ,yylineno);
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit (if_eq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
 				fprintf(stderr, "expr -> expr == expr\n");
 			}
 			|expr INEQUAL expr {
-				assert($1!=NULL && $2!=NULL);
+				assert($1!=NULL && $3!=NULL);
+
 				$$ = newexpr(booleanexpr_e);
+				$$->truelist = makelist(nextquad());
+				$$->falselist = makelist(nextquad() + 1);
+				emit(if_eq, $1, $3, 0, 0 ,yylineno);
+				emit(jump, 0, 0, 0, 0, yylineno);
+
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
 				emit (if_noteq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
 				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
 				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
+				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
 				fprintf(stderr, "expr -> expr != expr\n");}
-			|expr AND expr 
+			|expr AND M expr 
 			{
-				$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit(and, $1, $3, $$, 0, yylineno);
+				backpatch($1->truelist, $3);
+				//backpatch($4->truelist, nextquad());
+				$$->truelist = $4->truelist;
+				$$->falselist = merge($1->falselist, $4->falselist);
 				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
-				emit(if_eq, $1, newexpr_constbool(0), newexpr_constlabel(nextquad() + 3), 0, yylineno);
-				emit(if_eq, $3, newexpr_constbool(0), newexpr_constlabel(nextquad() + 2), 0, yylineno);
-				emit(assign, newexpr_constbool(1), NULL, $$, 0, yylineno);
-				emit(jump, NULL, NULL, newexpr_constlabel(nextquad() + 1), 0, yylineno);
-				emit(assign, newexpr_constbool(0), NULL, $$, 0, yylineno);
-				*/
-				//emit(and, $1, $3, $$, 0, yylineno);
+				emit(and, $1, $3, $$, 0, yylineno);*/
+				
 				fprintf(stderr, "expr -> expr AND expr\n");
 			}
-			|expr OR expr 
+			|expr OR M expr 
 			{
-				$$ = newexpr(booleanexpr_e);
+				backpatch($1->falselist, $3);
+				$$->truelist = merge($1->truelist, $4->truelist);
+				$$->falselist = $4->falselist;
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
-				emit(or, $1, $3, $$, 0, yylineno);
+				emit(or, $1, $3, $$, 0, yylineno);*/
 				fprintf(stderr, "expr -> expr OR expr\n");
 			}
 			|term {
@@ -359,6 +401,10 @@ expr:		assignexpr {
 term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS 
 			{
 				$$ = $2;
+				expr* t;
+				if(t = patch($2))
+					$$ = t;
+
 				fprintf(stderr, "term -> (expr)\n");
 			}
 			|MINUS expr 
@@ -372,9 +418,11 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 			}
 			|NOT expr 
 			{
-				$$ = newexpr(booleanexpr_e);
+				$$->truelist = $2->falselist;
+				$$->falselist = $2->truelist;
+				/*$$ = newexpr(booleanexpr_e);
 				$$->sym = newtemp();
-				emit(not, $2, NULL, $$, 0, yylineno);
+				emit(not, $2, NULL, $$, 0, yylineno);*/
 
 				fprintf(stderr, "term -> ! expr\n");
 			}
@@ -450,7 +498,9 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 
 assignexpr: lvalue ASSIGN expr {
 				int i;
-				
+				expr* t;
+				if(t = patch($3))
+					$3 = t;
 				fprintf(stderr, "assignexpr -> lvalue = expr\n");
 				
 				if ($1 && $1->sym->type == E_USERFUNC) {
@@ -604,15 +654,26 @@ member:		lvalue DOT ID {
 			}
 			|lvalue LEFT_BRACKETS expr RIGHT_BRACKETS 
 			{
+				expr* t;
+				if(t = patch($3))
+					$3 = t;
 				expr* member = newexpr(tableitem_e);
 				$1->type = tableitem_e;
 				member->sym = emit_iftableitem($1)->sym;
 				member->index = $3;
 				$$ = member;
+
 				fprintf(stderr, "member -> lvalue [expr]\n");
 			}
-			|call DOT ID {fprintf(stderr, "member -> call.id\n");}
-			|call LEFT_BRACKETS expr RIGHT_BRACKETS {fprintf(stderr, "member -> call [expr]\n");}
+			|call DOT ID {
+				fprintf(stderr, "member -> call.id\n");
+			}
+			|call LEFT_BRACKETS expr RIGHT_BRACKETS 
+			{
+				patch($3);
+
+				fprintf(stderr, "member -> call [expr]\n");
+			}
 			;
 
 call:		call LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
@@ -622,7 +683,7 @@ call:		call LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 			}
 			|lvalue callsuffix 
 			{
-				if($2->method) {
+				if($2 && $2->method) {
 					expr* self = $1;
 					if($2->name)
 						self->index = newexpr_conststring($2->name);
@@ -657,8 +718,10 @@ callsuffix:	normcall
 normcall:	LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
 			{
 				$$ = $2;
-				$$->method = 0;
-				$$->name = NULL;
+				if($$) {
+					$$->method = 0;
+					$$->name = NULL;
+				}
 				fprintf(stderr, "normcall -> (elist)\n");
 			}
 			;
@@ -677,6 +740,10 @@ elist:		expr elists
 				$$ = malloc(sizeof(func_t));
 				$$->expr = $1;
 				$$->next = $2;
+				expr* t;
+				if(t = patch($1))
+					$$->expr = t;
+
 				fprintf(stderr, "elist -> expr elists\n");
 			}
 			|/*empt*/
@@ -691,6 +758,10 @@ elists:		COMMA expr elists
 				$$ = malloc(sizeof(func_t));
 				$$->expr = $2;
 				$$->next = $3;	
+				expr* t;
+				if(t = patch($2))
+					$$->expr = t;
+
 				fprintf(stderr, "elists -> ,expr elists\n");
 			}
 			|/*empty*/ 
@@ -711,7 +782,16 @@ indexeds: 	COMMA indexed {fprintf(stderr, "indexeds -> ,indexed\n");}
 			|/*empty*/ {fprintf(stderr, "indexeds -> empty\n");}
 			;
 
-indexedelem:LEFT_BRACES expr COLON expr RIGHT_BRACES {fprintf(stderr, "indexdelem -> {expr : expr}\n");}
+indexedelem:LEFT_BRACES expr 
+			{
+				patch($2);
+
+			}COLON expr RIGHT_BRACES 
+			{
+				patch($5);
+
+				fprintf(stderr, "indexdelem -> {expr : expr}\n");
+			}
 			;
 
 block:		LEFT_BRACES
@@ -910,9 +990,13 @@ elseprefix:	ELSE
 
 ifprefix:	IF LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 			{
+				expr* t;
+				if(t = patch($3))
+					$3 = t;
 				emit(if_eq, $3, newexpr_constbool(1), newexpr_constlabel(nextquad()+2), 0 ,yylineno);
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
+
 				fprintf(stderr, "ifprefix -> IF (expr)\n");
 			}
 			;
@@ -948,6 +1032,10 @@ whilestart: WHILE
 
 whilecond:	LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 			{
+				expr* t;
+				if(t= patch($2))
+					$2 = t;
+				
 				emit(if_eq, $2, newexpr_constbool(1), newexpr_constlabel(nextquad()+2), 0 ,yylineno);
 				$$ = nextquad();
 				emit(jump, 0, 0, 0, 0, yylineno);
@@ -1002,6 +1090,9 @@ forprefix:	FOR LEFT_PARENTHESIS elist SEMICOLON M expr SEMICOLON
 				$$ = malloc(sizeof(for_t));
 				$$->test = $5;
 				$$->enter = nextquad();
+
+				patch($6);
+
 				fprintf(stderr, "forprefix -> FOR (elist; expr;\n");
 			}
 
@@ -1022,7 +1113,12 @@ N:			/* empty */
 			;
 
 
-returnstmt: RETURN expr SEMICOLON{fprintf(stderr, "returnstmt -> return expr;\n");}
+returnstmt: RETURN expr SEMICOLON
+			{
+				patch($2);
+
+				fprintf(stderr, "returnstmt -> return expr;\n");
+			}
 			|RETURN SEMICOLON{fprintf(stderr, "returnstmt -> return; \n");}
 			;
 %%
