@@ -1,5 +1,6 @@
 alpha.c
 parser.c
+parser.h
 parser.output
 alpha.exe.stackdump
 lex.log
