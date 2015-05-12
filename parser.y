@@ -816,6 +816,10 @@ const: 		INTCONST {
 				$$ = newexpr_constnum(yytext);
 				fprintf(stderr, "const -> intconst\n");
 			}
+			|REALCONST {
+				$$ = newexpr_constnum(yytext);
+				fprintf(stderr, "const -> realconst\n");
+			}
 			|STRING {
 				$$ = newexpr_conststring(yytext);
 				fprintf(stderr, "const -> string\n");
