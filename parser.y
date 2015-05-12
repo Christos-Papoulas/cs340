@@ -27,6 +27,8 @@
 	struct for_t_s* 	forValue;
 	struct func_t_s*	funcValue;
 	struct special_t_s*	specValue;
+	struct tableindex_t_s* tableValue;
+	struct indexed_t_s* indexedValue;
 }
 
 %start program
@@ -91,6 +93,7 @@
 %type <exprValue> funcprefix
 %type <exprValue> funcname
 %type <exprValue> call
+%type <exprValue> objectdef
 
 %type <funcValue> elist
 %type <funcValue> elists
@@ -118,6 +121,11 @@
 %type <specValue> forstmt
 %type <specValue> returnstmt
 %type <specValue> block
+
+%type <indexedValue> indexedelem
+%type <exprValue> tomounitismanassou
+%type <tableValue> indexed
+%type <tableValue> indexeds
 
 %left ASSIGN
 %left AND
@@ -206,7 +214,6 @@ stmt:		expr SEMICOLON {
 			}
 			|funcdef 
 			{
-				//$$ = $1;
 				fprintf(rules, "stmt -> funcdef\n");
 			}
 			|SEMICOLON 
@@ -279,12 +286,6 @@ expr:		assignexpr {
 				emit(if_greater, $1, $3, 0, 0 ,yylineno);
 				emit(jump, 0, 0, 0, 0, yylineno);
 
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit (if_greater, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
-				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
-				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				fprintf(rules, "expr -> expr > expr\n");
 			}
 			|expr GREATER_EQUAL expr {
@@ -295,13 +296,7 @@ expr:		assignexpr {
 				$$->falselist = makelist(nextquad() + 1);
 				emit(if_greatereq, $1, $3, 0, 0 ,yylineno);
 				emit(jump, 0, 0, 0, 0, yylineno);
-				/*
-				$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit (if_greatereq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
-				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
-				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
+
 				fprintf(rules, "expr -> expr >= expr\n");
 			}
 			|expr LESS expr {
@@ -311,12 +306,7 @@ expr:		assignexpr {
 				$$->falselist = makelist(nextquad() + 1);
 				emit(if_less, $1, $3, 0, 0 ,yylineno);
 				emit(jump, 0, 0, 0, 0, yylineno);
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit (if_less, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
-				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
-				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
+
 				fprintf(rules, "expr -> expr < expr\n");}
 			|expr LESS_EQUAL expr {
 				assert($1!=NULL && $3!=NULL);
@@ -325,13 +315,6 @@ expr:		assignexpr {
 				$$->falselist = makelist(nextquad() + 1);
 				emit(if_lesseq, $1, $3, 0, 0 ,yylineno);
 				emit(jump, 0, 0, 0, 0, yylineno);
-
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit (if_lesseq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
-				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
-				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
 				fprintf(rules, "expr -> expr <= expr\n");
 			}
@@ -343,13 +326,6 @@ expr:		assignexpr {
 				$$->falselist = makelist(nextquad() + 1);
 				emit(if_eq, $1, $3, 0, 0 ,yylineno);
 				emit(jump, 0, 0, 0, 0, yylineno);
-
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit (if_eq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
-				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
-				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
 				fprintf(rules, "expr -> expr == expr\n");
 			}
@@ -361,24 +337,14 @@ expr:		assignexpr {
 				$$->falselist = makelist(nextquad() + 1);
 				emit(if_eq, $1, $3, 0, 0 ,yylineno);
 				emit(jump, 0, 0, 0, 0, yylineno);
-
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit (if_noteq, $1, $3, newexpr_constlabel(nextquad()+3), 0 ,yylineno);
-				emit (assign, newexpr_constbool(0), NULL, $$, 0 , yylineno);
-				emit (jump, NULL, NULL, newexpr_constlabel(nextquad()+2), 0, yylineno);
-				emit (assign, newexpr_constbool(1), NULL, $$, 0, yylineno);*/
 				
 				fprintf(rules, "expr -> expr != expr\n");}
 			|expr AND M expr 
 			{
 				backpatch($1->truelist, $3);
-				//backpatch($4->truelist, nextquad());
 				$$->truelist = $4->truelist;
 				$$->falselist = merge($1->falselist, $4->falselist);
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit(and, $1, $3, $$, 0, yylineno);*/
+
 				
 				fprintf(rules, "expr -> expr AND expr\n");
 			}
@@ -387,9 +353,7 @@ expr:		assignexpr {
 				backpatch($1->falselist, $3);
 				$$->truelist = merge($1->truelist, $4->truelist);
 				$$->falselist = $4->falselist;
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit(or, $1, $3, $$, 0, yylineno);*/
+
 				fprintf(rules, "expr -> expr OR expr\n");
 			}
 			|term {
@@ -420,9 +384,6 @@ term: 		LEFT_PARENTHESIS expr RIGHT_PARENTHESIS
 			{
 				$$->truelist = $2->falselist;
 				$$->falselist = $2->truelist;
-				/*$$ = newexpr(booleanexpr_e);
-				$$->sym = newtemp();
-				emit(not, $2, NULL, $$, 0, yylineno);*/
 
 				fprintf(rules, "term -> ! expr\n");
 			}
@@ -500,7 +461,7 @@ assignexpr: lvalue ASSIGN expr {
 				int i;
 				expr* t;
 				if(t = patch($3))
-					$3 = t;
+				 	$3 = t;
 				fprintf(rules, "assignexpr -> lvalue = expr\n");
 				
 				if ($1 && $1->sym->type == E_USERFUNC) {
@@ -538,7 +499,7 @@ assignexpr: lvalue ASSIGN expr {
 
 primary:	lvalue 
 			{
-				$$ = $1;
+				$$ = emit_iftableitem($1);
 				fprintf(rules, "primary -> lvalue\n");
 				
 			}
@@ -771,26 +732,72 @@ elists:		COMMA expr elists
 			}
 			;
 
-objectdef:	LEFT_BRACKETS elist RIGHT_BRACKETS {fprintf(rules, "objectdef -> 	[elist]\n");}
-			|LEFT_BRACKETS indexed RIGHT_BRACKETS {fprintf(rules, "objectdef -> [indexed]\n");}
-			;
-
-indexed:	indexedelem indexeds {fprintf(rules, "indexed -> indexedelem\n");}
-			;
-
-indexeds: 	COMMA indexed {fprintf(rules, "indexeds -> ,indexed\n");}
-			|/*empty*/ {fprintf(rules, "indexeds -> empty\n");}
-			;
-
-indexedelem:LEFT_BRACES expr 
+objectdef:	LEFT_BRACKETS elist RIGHT_BRACKETS 
 			{
-				patch($2);
-
-			}COLON expr RIGHT_BRACES 
+				expr* t = newexpr(newtable_e);
+				t-> sym = newtemp();
+				emit(tablecreate, 0, 0, t, 0, yylineno);
+				int i = 0;
+				func_t* x;
+				for(x = $2; x; x = x->next) {
+					emit(tablesetelem, x->expr, newexpr_constnum_i(i++), t, 0, yylineno);
+				}
+				$$ = t;
+				fprintf(rules, "objectdef -> 	[elist]\n");
+			}
+			|LEFT_BRACKETS indexed RIGHT_BRACKETS 
 			{
-				patch($5);
+				expr* t = newexpr(newtable_e);
+				t->sym = newtemp();
+				emit(tablecreate, 0, 0, t, 0, yylineno);
+				tableindex_t* x;
+				for(x = $2; x; x = x->next){
+					emit(tablesetelem, x->i->x, x->i->y, t, 0, yylineno);
+				}
+				$$ = t;
+				fprintf(rules, "objectdef -> [indexed]\n");
+			}
+			;
+
+indexed:	indexedelem indexeds 
+			{
+				$$ = malloc(sizeof(tableindex_t));
+				$$->i = $1;
+				$$->next = $2;
+				fprintf(rules, "indexed -> indexedelem\n");
+			}
+			;
+
+indexeds: 	COMMA indexed 
+			{
+				$$ = $2;
+				fprintf(rules, "indexeds -> ,indexed\n");
+			}
+			|/*empty*/ 
+			{
+				$$ = NULL;
+				fprintf(rules, "indexeds -> empty\n");
+			}
+			;
+
+indexedelem: tomounitismanassou COLON expr RIGHT_BRACES 
+			{
+				expr* t = NULL;
+				t = patch($3);
+				$$ = malloc(sizeof(struct indexed_t_s));
+				$$->x = $1;
+				$$->y = t != NULL ? t : $3;
 
 				fprintf(rules, "indexdelem -> {expr : expr}\n");
+			}
+			;
+
+tomounitismanassou: LEFT_BRACES expr 
+			{
+				expr* t = NULL;
+				t = patch($2);
+				$$ = t != NULL ? t : $2;
+
 			}
 			;
 
@@ -1115,11 +1122,19 @@ N:			/* empty */
 
 returnstmt: RETURN expr SEMICOLON
 			{
-				patch($2);
-
+				expr* t = NULL;
+				t = patch($2);
+				if(t)
+					$2 = t;
+				emit(ret, 0, 0, $2, 0, yylineno);
 				fprintf(rules, "returnstmt -> return expr;\n");
 			}
-			|RETURN SEMICOLON{fprintf(rules, "returnstmt -> return; \n");}
+			|RETURN SEMICOLON
+			{
+				emit(ret, 0, 0, 0, 0, yylineno);
+
+				fprintf(rules, "returnstmt -> return; \n");
+			}
 			;
 %%
 

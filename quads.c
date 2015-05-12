@@ -154,6 +154,12 @@ expr* newexpr_constnum (char* s) {
 	return e;
 }
 
+expr* newexpr_constnum_i (int i) {
+	expr* e = newexpr (constnum_e);
+	e->numConst = i;
+	return e;
+}
+
 expr* newexpr_constbool (int s) {
 	expr* e = newexpr (constbool_e);
 	e->boolConst = s;

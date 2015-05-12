@@ -116,11 +116,24 @@ typedef struct special_t_s
 	int loopcounter;	
 } special_t;
 
+typedef struct indexed_t_s
+{
+	expr* x;
+	expr* y;	
+} indexed_t;
+
+typedef struct tableindex_t_s
+{
+	indexed_t* i;
+	struct tableindex_t_s* next;	
+} tableindex_t;
+
 
 expr* lvalue_expr (SymbolTableEntry* sym);
 expr* newexpr (expr_t t);
 expr* newexpr_conststring (char* s);
 expr* newexpr_constnum (char* s);
+expr* newexpr_constnum_i (int i);
 expr* newexpr_constbool (int s);
 expr* newexpr_constnil ();
 expr* newexpr_constlabel (int l);
