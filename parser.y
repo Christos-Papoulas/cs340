@@ -123,7 +123,7 @@
 %type <specValue> block
 
 %type <indexedValue> indexedelem
-%type <exprValue> tomounitismanassou
+%type <exprValue> kati
 %type <tableValue> indexed
 %type <tableValue> indexeds
 
@@ -226,6 +226,10 @@ stmt:		expr SEMICOLON {
 breakstmt:	BREAK SEMICOLON
 			{
 				$$ = malloc(sizeof(special_t));
+				if(getScope() == 0) {
+					fprintf(stderr, "Error:%d break statement outside of block", yylineno);
+					exit(1);
+				}
 				$$->breaklist = newlist(nextquad());
 				$$->contlist = NULL;
 				emit(jump, 0, 0, 0, 0, yylineno);
@@ -236,6 +240,10 @@ breakstmt:	BREAK SEMICOLON
 continuestmt: CONTINUE SEMICOLON 
 			{
 				$$ = malloc(sizeof(special_t));
+				if(getScope() == 0) {
+					fprintf(stderr, "Error:%d continue statement outside of block", yylineno);
+					exit(1);
+				}
 				$$->contlist = newlist(nextquad());
 				$$->breaklist = NULL;
 				emit(jump, 0, 0, 0, 0, yylineno);
@@ -739,7 +747,7 @@ indexeds: 	COMMA indexed
 			}
 			;
 
-indexedelem: tomounitismanassou COLON expr RIGHT_BRACES 
+indexedelem: kati COLON expr RIGHT_BRACES 
 			{
 				expr* t = NULL;
 				t = patch($3);
@@ -751,7 +759,7 @@ indexedelem: tomounitismanassou COLON expr RIGHT_BRACES
 			}
 			;
 
-tomounitismanassou: LEFT_BRACES expr 
+kati: LEFT_BRACES expr 
 			{
 				expr* t = NULL;
 				t = patch($2);
@@ -1105,7 +1113,7 @@ int yyerror (char* yaccProvidedMessage) {
 
 int main (int argc, char** argv) {
 	out = fopen("lex.log", "w");
-	rules = stderr; //fopen("rules.log", "w");
+	rules = fopen("rules.log", "w");
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "Cannot read file: %s \n", argv[1]);
@@ -1117,6 +1125,6 @@ int main (int argc, char** argv) {
 	init();
 	yyparse();
 	printSymbolTable();
-	printTheQuadsMyLove();
+	printTheQuads();
 	return 0;
 }

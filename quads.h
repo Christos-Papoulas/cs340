@@ -170,6 +170,6 @@ list* merge(list*, list* );
 SymbolTableEntry* newtemp();
 
 
-void printTheQuadsMyLove();
+void printTheQuads();
 
 #endif

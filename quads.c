@@ -371,7 +371,7 @@ void printArguments (expr* arg) {
 			break;
 	}
 }
-void printTheQuadsMyLove(){
+void printTheQuads(){
 	int i;
 	putchar('\n');
 	for (i=0; i < currQuad; i++) {
