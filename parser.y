@@ -663,8 +663,11 @@ normcall:	LEFT_PARENTHESIS elist RIGHT_PARENTHESIS
 methodcall: DOUBLE_DOT ID LEFT_PARENTHESIS elist RIGHT_PARENTHESIS 
 			{
 				$$ = $4;
-				$$->method = 1;
-				$$->name = strdup($2);
+				if ($$ != NULL)
+				{
+					$$->method = 1;
+					$$->name = strdup($2);
+				}
 				fprintf(rules, "methodcall -> ..id (elist)\n");
 			} 
 			;

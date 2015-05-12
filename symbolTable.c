@@ -174,7 +174,7 @@ void printSymbolTable() {
 		fprintf(symtable, "Active\ttype\tName\tscope\tline\t\n");
 		for (i=0; i<HASH_SIZE; i++) {
 			if(!h->st) break;
-			if(h->st[i]->hasData) {
+			if(h->st[i] && h->st[i]->hasData) {
 				fprintf(symtable, "%d\t", h->st[i]->isActive);
 				switch (h->st[i]->type) {
 					case E_GLOBAL:
@@ -214,6 +214,8 @@ void printSymbolTable() {
 				
 				fprintf(symtable, "\n");
 			}
+
+			if(!h->st[i]) break;
 
 			for (tmp = h->st[i]->next; tmp; tmp = tmp->next) {
 				if(tmp->hasData) {
