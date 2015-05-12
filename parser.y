@@ -1131,7 +1131,7 @@ int yyerror (char* yaccProvidedMessage) {
 
 int main (int argc, char** argv) {
 	out = fopen("lex.log", "w");
-	rules = fopen("rules.log", "w");
+	rules = stderr; //fopen("rules.log", "w");
 	if (argc > 1) {
 		if (!(yyin = fopen(argv[1], "r"))) {
 			fprintf(stderr, "Cannot read file: %s \n", argv[1]);

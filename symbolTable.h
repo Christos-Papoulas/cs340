@@ -58,9 +58,9 @@ SymbolTableEntry*  insert(int scope, const char* name, int line, enum SymbolTabl
 
 void printSymbolTable();
 
-SymbolTableEntry* lookUp(int scope, char* name);
+SymbolTableEntry* lookUp(int scope, const char* name);
 
-int isLibraryFunction (char* name);
+int isLibraryFunction (const char* name);
 
 int getScope();
 void scopeUp();

@@ -254,7 +254,7 @@ void printSymbolTable() {
 	}
 }
 
-SymbolTableEntry* lookUp(int scope, char* name) {
+SymbolTableEntry* lookUp(int scope, const char* name) {
 	assert (stl != NULL);
 	SymbolTableList* l_tmp;
 	SymbolTableEntry* h_tmp;
@@ -291,7 +291,7 @@ SymbolTableEntry* lookUp(int scope, char* name) {
 	return NULL;
 }
 
-int isLibraryFunction (char* name) {
+int isLibraryFunction (const char* name) {
 	int i;
 	for (i=0; i<LIB_FUNC_NUM; i++) {
 		if (!strcmp(name,libfuncs_t[i])) {
