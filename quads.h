@@ -128,7 +128,6 @@ typedef struct tableindex_t_s
 	struct tableindex_t_s* next;	
 } tableindex_t;
 
-
 expr* lvalue_expr (SymbolTableEntry* sym);
 expr* newexpr (expr_t t);
 expr* newexpr_conststring (char* s);
@@ -154,6 +153,9 @@ void backpatch(list*, int );
 expr * patch(expr* e);
 
 void emit (iopcode op, expr* arg1, expr* arg2, expr* result, unsigned label, unsigned line);
+expr* emit_arithm(iopcode code, expr* arg1, expr* arg2);
+expr* emit_relop(iopcode code, expr* arg1, expr* arg2);
+
 int nextquad ();
 
 list* makelist(int );

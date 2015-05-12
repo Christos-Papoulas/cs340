@@ -248,95 +248,54 @@ expr:		assignexpr {
 				fprintf(rules, "expr -> assignexpr\n");
 			}
 			|expr PLUS expr {
-				$$ = newexpr(arithexpr_e);
-				$$->sym = newtemp();
-				emit(add, $1, $3, $$, 0, yylineno);
+				$$ = emit_arithm(add, $1, $3);
 
 				fprintf(rules, "expr -> expr + expr\n");
 			}
 			|expr MINUS expr {
-				$$ = newexpr(arithexpr_e);
-				$$->sym = newtemp();
-				emit(sub, $1, $3, $$, 0, yylineno);
+				$$ = emit_arithm(sub, $1, $3);
+
 				fprintf(rules, "expr -> expr - expr\n");
 			}
 			|expr MULTIPLIES expr {
-				$$ = newexpr(arithexpr_e);
-				$$->sym = newtemp();
-				emit(mul, $1, $3, $$, 0, yylineno);
+				$$ = emit_arithm(mul, $1, $3);
+
 				fprintf(rules, "expr -> expr * expr\n");
 			}
 			|expr DIVIDES expr {
-				$$ = newexpr(arithexpr_e);
-				$$->sym = newtemp();
-				emit(divi, $1, $3, $$, 0, yylineno);
+				$$ = emit_arithm(divi, $1, $3);
 				fprintf(rules, "expr -> expr / expr\n");
 			}
 			|expr MODULUS expr {
-				$$ = newexpr(arithexpr_e);
-				$$->sym = newtemp();
-				emit(mod, $1, $3, $$, 0, yylineno);
+				$$ = emit_arithm(mod, $1, $3);
 				fprintf(rules, "expr -> expr mod expr\n");
 			}
 			|expr GREATER expr {
-				assert($1!=NULL && $3!=NULL);
-				$$ = newexpr(booleanexpr_e);
-				$$->truelist = makelist(nextquad());
-				$$->falselist = makelist(nextquad() + 1);
-				emit(if_greater, $1, $3, 0, 0 ,yylineno);
-				emit(jump, 0, 0, 0, 0, yylineno);
+				$$ = emit_relop(if_greater, $1, $3);
 
 				fprintf(rules, "expr -> expr > expr\n");
 			}
 			|expr GREATER_EQUAL expr {
-				assert($1!=NULL && $3!=NULL);
-
-				$$ = newexpr(booleanexpr_e);
-				$$->truelist = makelist(nextquad());
-				$$->falselist = makelist(nextquad() + 1);
-				emit(if_greatereq, $1, $3, 0, 0 ,yylineno);
-				emit(jump, 0, 0, 0, 0, yylineno);
+				$$ = emit_relop(if_greatereq, $1, $3);
 
 				fprintf(rules, "expr -> expr >= expr\n");
 			}
 			|expr LESS expr {
-				assert($1!=NULL && $3!=NULL);
-				$$ = newexpr(booleanexpr_e);
-				$$->truelist = makelist(nextquad());
-				$$->falselist = makelist(nextquad() + 1);
-				emit(if_less, $1, $3, 0, 0 ,yylineno);
-				emit(jump, 0, 0, 0, 0, yylineno);
+				$$ = emit_relop(if_less, $1, $3);
 
 				fprintf(rules, "expr -> expr < expr\n");}
 			|expr LESS_EQUAL expr {
-				assert($1!=NULL && $3!=NULL);
-				$$ = newexpr(booleanexpr_e);
-				$$->truelist = makelist(nextquad());
-				$$->falselist = makelist(nextquad() + 1);
-				emit(if_lesseq, $1, $3, 0, 0 ,yylineno);
-				emit(jump, 0, 0, 0, 0, yylineno);
+				$$ = emit_relop(if_lesseq, $1, $3);
 				
 				fprintf(rules, "expr -> expr <= expr\n");
 			}
 			|expr EQUAL expr {
-				assert($1!=NULL && $3!=NULL);
-
-				$$ = newexpr(booleanexpr_e);
-				$$->truelist = makelist(nextquad());
-				$$->falselist = makelist(nextquad() + 1);
-				emit(if_eq, $1, $3, 0, 0 ,yylineno);
-				emit(jump, 0, 0, 0, 0, yylineno);
+				$$ = emit_relop(if_eq, $1, $3);
 				
 				fprintf(rules, "expr -> expr == expr\n");
 			}
 			|expr INEQUAL expr {
-				assert($1!=NULL && $3!=NULL);
-
-				$$ = newexpr(booleanexpr_e);
-				$$->truelist = makelist(nextquad());
-				$$->falselist = makelist(nextquad() + 1);
-				emit(if_eq, $1, $3, 0, 0 ,yylineno);
-				emit(jump, 0, 0, 0, 0, yylineno);
+				$$ = emit_relop(if_noteq, $1, $3);
 				
 				fprintf(rules, "expr -> expr != expr\n");}
 			|expr AND M expr 

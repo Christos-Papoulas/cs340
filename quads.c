@@ -187,6 +187,22 @@ expr* emit_iftableitem (expr* e) {
 		return result;
 	}
 }
+expr* emit_arithm(iopcode code, expr* arg1, expr* arg2) {
+	expr* new = newexpr(arithexpr_e);
+	new->sym = newtemp();
+	emit(code, arg1, arg2, new, 0, yylineno); 
+	return new;
+}
+
+expr* emit_relop(iopcode code, expr* arg1, expr* arg2) {
+	assert(arg1 !=NULL && arg2 !=NULL);
+	expr* new = newexpr(booleanexpr_e);
+	new->truelist = makelist(nextquad());
+	new->falselist = makelist(nextquad() + 1);
+	emit(code, arg1, arg2, 0, 0 ,yylineno);
+	emit(jump, 0, 0, 0, 0, yylineno);
+	return new;
+}
 
 list* makelist(int l) {
 	list* n = malloc(sizeof(list));
