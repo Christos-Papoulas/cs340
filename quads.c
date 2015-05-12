@@ -182,6 +182,12 @@ expr* emit_iftableitem (expr* e) {
 	}
 }
 
+list* makelist(int l) {
+	list* n = malloc(sizeof(list));
+	n->label = l;
+	return n;
+}
+
 expr* member_item (expr* lvalue, char* name) {
 	lvalue = emit_iftableitem(lvalue);
 	expr* item = newexpr (tableitem_e);
@@ -285,6 +291,27 @@ list* merge(list* a, list* b) {
 	tmp->next = b;
 	return a;
 }
+
+void backpatch(list* bl, int label) {
+	list* t;
+	for(t = bl; t; t = t->next)
+		(&quads[t->label])->result = newexpr_constlabel(label);
+}
+
+expr * patch(expr* e){
+	expr * new = NULL;
+	backpatch(e->falselist, nextquad());
+	backpatch(e->truelist, nextquad() + 2);
+	if(e->type == booleanexpr_e){
+		new = newexpr(var_e);
+		new->sym = newtemp();
+		emit(assign, newexpr_constbool(0), 0, new, 0, yylineno);
+		emit(jump, 0, 0, newexpr_constlabel(nextquad() + 2), 0, yylineno);
+		emit(assign, newexpr_constbool(1), 0, new, 0, yylineno);
+	}
+	return new;
+}
+
 void printArguments (expr* arg) {
 	if(arg == NULL)
 		return ;
