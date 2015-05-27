@@ -5,6 +5,7 @@
 	#include "symbolTable.h"
 	#include <assert.h>
 	#include "quads.h"
+	#include "final_code.h"
 
 	int yyerror (char* yaccProvidedMessage);
 	int alpha_yylex ();
@@ -1145,5 +1146,8 @@ int main (int argc, char** argv) {
 	yyparse();
 	printSymbolTable();
 	printTheQuads();
+	make_generate(); 
+	print_instructions_txt();
+	print_binary_code();
 	return 0;
 }

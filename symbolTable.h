@@ -31,6 +31,10 @@ typedef struct SymbolTableEntry_s {
 		Variable varVal;
 		Function funcVal;
 	} value;
+	int offset; // @todo add value to this
+	int scopeSpace; // @todo add value to this
+	int taddress; // @todo add value to this
+
 	enum SymbolTableType type;
 	struct SymbolTableEntry_s* next;
 } SymbolTableEntry;
@@ -42,8 +46,7 @@ typedef struct SymbolTableList_s {
 } SymbolTableList;
 
 //for functions hack <3
-struct node
-{
+struct node {
     int scope;
     struct node *ptr;
 };

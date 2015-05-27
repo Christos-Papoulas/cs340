@@ -15,15 +15,25 @@ extern int yylineno;
 extern int loopcounter;
 
 typedef enum iopcode {
-	assign = 0, add, sub, 
-	mul, divi, mod, 
-	uminus, and, or, 
-	not, if_eq, if_noteq, 
-	if_lesseq, if_greatereq, if_less,
+	assign = 0, 
+	add,
+	sub, 
+	mul, 
+	divi, 
+	mod, 
+	uminus,
+	and, 
+	or, 
+	not, 
+	if_eq,
+	if_noteq, 
+	if_lesseq,
+	if_greatereq, 
+	if_less,
 	if_greater, call, param,
 	ret, getretval, funcstart, 
 	funcend, tablecreate, 
-	tablegetelem, tablesetelem, jump
+	tablegetelem, tablesetelem, jump, nop
 } iopcode;
 
 typedef enum expr_t {
@@ -74,6 +84,8 @@ typedef struct quad {
 	expr* arg2;
 	unsigned label;
 	unsigned line;
+
+	unsigned taddress;
 } quad;
 
 typedef enum scopespace_t {

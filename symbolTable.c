@@ -79,6 +79,7 @@ SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* n
 		h->st[key]->isActive = 1;
 		h->st[key]->hasData = 1;
 		h->st[key]->type = t;
+		h->st[key]->scopeSpace = currscopespace();
 		h->st[key]->next = NULL;
 		switch (t) {
 			case E_GLOBAL:
@@ -109,6 +110,8 @@ SymbolTableEntry* insertToHashTable(SymbolTableList* h, int scope, const char* n
 			tmp->next->isActive = 1;
 			tmp->next->hasData = 1;
 			tmp->next->type = t;
+			tmp->next->scopeSpace = currscopespace();
+
 			tmp->next->next = NULL;
 			switch (t) {
 				case E_GLOBAL:
