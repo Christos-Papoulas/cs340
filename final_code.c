@@ -1058,6 +1058,8 @@ void print_binary_code()
 		fclose(bin);
 }
 
+
+
 void hitError(int r) {
 	if (r!=1) {
 		fprintf(stderr, "Error in binaryCode File\n");

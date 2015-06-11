@@ -152,4 +152,6 @@ void push_func(SymbolTableEntry*  );
 
 unsigned int nextinstructionlabel();
 unsigned int currprocessedquad();
+
+
 #endif

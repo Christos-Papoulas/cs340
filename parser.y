@@ -6,7 +6,8 @@
 	#include <assert.h>
 	#include "quads.h"
 	#include "final_code.h"
-
+	#include "avm.h"
+	
 	int yyerror (char* yaccProvidedMessage);
 	int alpha_yylex ();
 	int inFunction = 0;
@@ -1144,10 +1145,19 @@ int main (int argc, char** argv) {
 		yyin = stdin;
 	init();
 	yyparse();
+	
 	printSymbolTable();
+
 	printTheQuads();
+	
 	make_generate(); 
+	
 	print_instructions_txt();
+	
 	print_binary_code();
+
+	read_binary_code();
+
+	execute();
 	return 0;
 }

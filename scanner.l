@@ -1,11 +1,10 @@
-
 %{
 
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 #include "parser.h"
-// #define YY_DECL int alpha_yylex (void* ylval)
+// #define YY_DECL int alpha_yylex (void* ylval) 
 
 enum types {
 	E_IF,
