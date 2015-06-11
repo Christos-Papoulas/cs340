@@ -1,4 +1,5 @@
-alpha.c
+BinaryCode.abc
+Instructions.txtalpha.c
 parser.c
 parser.h
 parser.output
