@@ -270,7 +270,7 @@ SymbolTableEntry* lookUp(int scope, const char* name) {
 	assert (stl != NULL);
 	SymbolTableList* l_tmp;
 	SymbolTableEntry* h_tmp;
-	int s, i;
+	int s;
 	int key = hashFunction(name);
 	for (l_tmp = stl, s = 0; ; s++) {
 		if(s == scope)

@@ -150,7 +150,6 @@ program:	stmts {fprintf(rules, "program -> stmts\n");}
 stmts:		stmts stmt 
 			{
 				$$ = malloc(sizeof(special_t));
-				special_t* skata = $$;
 				list* skata1 = $1 ? $1->breaklist : NULL;
 				list* skata2 = $2 ? $2->breaklist : NULL;
 				$$->breaklist = merge(
@@ -448,7 +447,7 @@ assignexpr: lvalue ASSIGN expr {
 				for (i=0; i <= getScope() && $1; i++) {
 					SymbolTableEntry* tmp = lookUp(i,$1->sym->value.varVal.name);
 					if ( tmp && tmp->type == E_USERFUNC) {
-						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1);
+						fprintf (stderr, "Error at line %d: cannot redifine user function: %s\n", yylineno, $1->sym->value.varVal.name);
 						exit(-1);
 					}
 					
@@ -909,7 +908,6 @@ const: 		INTCONST {
 
 idlist:		ID 
 			{
-				SymbolTableEntry* t = insert(getScope(), yylval.stringValue, yylineno, E_FORMAL);
 				if(isLibraryFunction(yylval.stringValue)){
 					fprintf (stderr, "Error at line %d: formal shadows libfunc: %s\n", yylineno, yylval.stringValue);
 					exit(-1);
@@ -1129,7 +1127,7 @@ returnstmt: RETURN expr SEMICOLON
 int yyerror (char* yaccProvidedMessage) {
 	fprintf(stderr, "%s: at line %d, before token %s\n", yaccProvidedMessage, yylineno, yytext);
 	fprintf(stderr, "INPUT NOT VALID\n");
-	//exit(-1);
+	return 1;
 }
 
 int main (int argc, char** argv) {
@@ -1159,5 +1157,6 @@ int main (int argc, char** argv) {
 	read_binary_code();
 
 	execute();
+
 	return 0;
 }

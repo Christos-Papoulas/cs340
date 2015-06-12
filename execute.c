@@ -2,7 +2,6 @@
 #include "execute.h"
 
 
-
 library_func_t libfuncs[] = {
    0,
    0,
@@ -94,7 +93,8 @@ void execute_funcenter(instruction *instr) {
 	userfunc_p* funcInfo = avm_getfuncinfo(pc);
 	  
 	topsp = top;
-	top = top-funcInfo->localSize; 
+	if(funcInfo)
+		top = top - funcInfo->localSize; 
 	//printf("top [%d]\n",top);
 	//printf("localSize [%d]\n\n",funcInfo->localSize);
 }
@@ -119,7 +119,6 @@ void execute_funcexit(instruction* unused){
 }
 
 userfunc_p* avm_getfuncinfo(unsigned int address) {
-	int i;
 	userfunc_p* k;
 	//userfunc_p
 

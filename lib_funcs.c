@@ -14,7 +14,7 @@ extern unsigned top,topsp;
 /*extern apo avm_tobool.c*/
 extern char* typeStrings[];
 
-void libfunc_typeof(){
+void libfunc_typeof() {
 	
 	unsigned int n= avm_totalactuals();
 	
@@ -27,7 +27,7 @@ void libfunc_typeof(){
 	}
 }
 
-void libfunc_totalarguments(){
+void libfunc_totalarguments() {
 	/* get topsp of previous activation record*/
 	unsigned int p_topsp = avm_get_envvalue(topsp+AVM_SAVEDTOPSP_OFFSET);
 	avm_memcellclear(&retval);
@@ -45,8 +45,8 @@ void libfunc_totalarguments(){
 void libfunc_print(){
 	
 	unsigned int n=avm_totalactuals();
-	printf("avm_totalactuals %d\n",n);
 	unsigned int i=0;
+
 	while(i<n){
 		char* s= avm_tostring(avm_getactual(i));
 		puts(s);

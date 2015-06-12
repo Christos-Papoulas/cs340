@@ -150,6 +150,7 @@ lineCom		\/\/.*
 								unput(c);
 						}
 					}
+					return 0;
 				}
 				int sum;
 
@@ -486,7 +487,7 @@ lineCom		\/\/.*
 				int j=0;
 				if (yytext[strlen(yytext)-2]=='\\') {
 					fprintf(stderr, "Error: %d: quotes of string do not close %s\n", yylineno, yytext);
-					return ;
+					return 0;
 				}
 				for (i=1; i<(strlen(yytext)-1); i++){
 					if (yytext[i]!='\\'){

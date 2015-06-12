@@ -52,7 +52,7 @@ typedef enum VMopcode
 	newtable_v, //20
 	tablegetelem_v, //21
 	tablesetelem_v, //22
-	pusharg_v,/*einai i param*/ //23
+	pusharg_v, //23
 	nop_v, //24
 } vmopcode;
 
@@ -153,5 +153,8 @@ void push_func(SymbolTableEntry*  );
 unsigned int nextinstructionlabel();
 unsigned int currprocessedquad();
 
+void print_binary_code();
+
+int make_magic_number();
 
 #endif

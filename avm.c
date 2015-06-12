@@ -2,8 +2,10 @@
 #include "dispatcher.h"
 #include "avm_mem.h"
 #include "lib_funcs.h"
+#include "final_code.h"
+#include "execute.h"
 
-unsigned int 	glbnum;
+unsigned int 	glbnum = 0;
 
 void avm_initialize() {
 	avm_initstack();
@@ -15,10 +17,9 @@ void avm_initialize() {
 void execute(){
 	avm_initialize();
 	
-	while(!executionFinished) {
-		printf("execute  one cycle\n");
+	while(!executionFinished) 
 	    execute_cycle();
-	}
+	
 	return ;
 }
 
@@ -91,13 +92,8 @@ void vm_load_instr(instruction* instr, FILE *fp) {
 void read_binary_code() {
 	FILE *fp;
 	int magic = 0;
-	int globals = -1;
-	int  strsz, i;
-	char *str = (char *)malloc(10*sizeof(char));
-	int num;
-	userfunc* func;
-	int a;
-	int code_Size;
+	unsigned int   i;
+
 	fp =  fopen("BinaryCode.abc","rb");
 	if( fp== NULL) {
 		fprintf(stderr, "Error opening file\n");
@@ -119,9 +115,7 @@ void read_binary_code() {
 		vm_load_instr(&code[i],fp);
 	}
 
-	top = AVM_STACKSIZE -2 - glbnum;
-	
+	top = AVM_STACKSIZE -2 - glbnum;	
 	topsp = top;
-	//printf("topsp[%d]\n",topsp);
 	return ;
 }

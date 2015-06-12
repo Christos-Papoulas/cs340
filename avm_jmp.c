@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "avm_jmp.h"
+#include "avm_error.h"
 #include "dispatcher.h"
 #include "avm_mem.h"
 #include "avm_tobool.h"

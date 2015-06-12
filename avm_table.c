@@ -26,8 +26,10 @@ void avm_tabledestroy(avm_table* t) {
 
 void avm_tabledecrefcounter(avm_table* t) { 
 	assert(t->refCounter>0);
-	if(!t->refCounter--)
+	if(!t->refCounter--){
+		printf("paw na kanw free");
 		avm_tabledestroy(t);
+	}
 }
 
 void avm_tablebucketsinit(avm_table_bucket** t){

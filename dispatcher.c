@@ -42,13 +42,11 @@ void execute_cycle(void) {
 	unsigned int oldPc;
 	if(executionFinished)
 		return;
-		
 	else{
 		if(pc==AVM_ENDING_PC){
 			executionFinished =1;
 			return;
-		}
-		else{
+		} else {
 			assert(pc < AVM_ENDING_PC);
 			instruction * instr = code+pc;
 			//printf("AVM_ENDING_PC %d",AVM_ENDING_PC);
@@ -61,14 +59,9 @@ void execute_cycle(void) {
 				oldPc=pc;
 				//printf("instr->opcode %d\n",instr->opcode);
 				(*executeFuncs[instr->opcode])(instr);
-				
-			
 			if(pc==oldPc)
 				pc++;
-			
 		}
 	}
-
-
 }
 

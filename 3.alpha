@@ -1,0 +1,8 @@
+function g() {
+	print("eimai mesa stin g");
+}
+function f() {
+	g();
+}
+
+f();

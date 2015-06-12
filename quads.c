@@ -4,7 +4,7 @@ quad* quads = NULL;
 int total = 0;
 int currQuad = 0;
 int  tmpNum = 0;
-
+FILE* quads_fp = NULL;
 
 int programVarOffset = 0;
 int functionLocalOffset = 0;
@@ -27,13 +27,13 @@ void expand () {
 void emit (iopcode op, expr* arg1, expr* arg2, expr* result, unsigned label, unsigned line) {
 	if (currQuad == total) 
 		expand ();
-
+	int l = currQuad;
 	quad* p = quads + currQuad++;
 	p->op = op;
 	p->arg1 = arg1;
 	p->arg2 = arg2;
 	p->result = result;
-	p->label = label;
+	p->label = l;
 	p->line = line;
 }
 
@@ -249,7 +249,7 @@ char* opstrings[] = {
 };
 
 void printOperation(iopcode op) {
-	fprintf(stdout, "%s\t", opstrings[op]);
+	fprintf(quads_fp, "%s\t", opstrings[op]);
 }
 
 
@@ -298,6 +298,8 @@ list* newlist(int l) {
 
 	new->label = l;
 	new->next = NULL;
+
+	return new;
 }
 
 list* merge(list* a, list* b) {
@@ -344,27 +346,26 @@ void printArguments (expr* arg) {
 		case assignexpr_e:
 		case newtable_e:
 		case tableitem_e:
-			fprintf(stdout, "%s#\t", arg->sym->value.varVal.name);
+			fprintf(quads_fp, "%s#\t", arg->sym->value.varVal.name);
 			break;
-			//fprintf(stderr, "%s\n", );
 		case programfunc_e:
 		case libraryfunc_e:
-			fprintf(stdout, "%s*\t", arg->sym->value.funcVal.name);
+			fprintf(quads_fp, "%s*\t", arg->sym->value.funcVal.name);
 			break;
 		case constnum_e:
-			fprintf(stdout, "%lf\t", arg->numConst);
+			fprintf(quads_fp, "%lf\t", arg->numConst);
 			break;
 		case constbool_e:
-			fprintf(stdout, "%s\t", arg->boolConst == 0 ? "false" : "true");
+			fprintf(quads_fp, "%s\t", arg->boolConst == 0 ? "false" : "true");
 			break;
 		case conststring_e:
-			fprintf(stdout, "%s\t", arg->strConst);
+			fprintf(quads_fp, "%s\t", arg->strConst);
 			break;
 		case constlabel_e:
-			fprintf(stdout, "%d\t", arg->labelConst);
+			fprintf(quads_fp, "%d\t", arg->labelConst);
 			break;
 		case nil_e:
-			fprintf(stdout, "%s\t", "nil");
+			fprintf(quads_fp, "%s\t", "nil");
 			break;
 		default: 
 			assert(0);
@@ -374,16 +375,18 @@ void printArguments (expr* arg) {
 void printTheQuads(){
 	int i;
 	putchar('\n');
+	quads_fp = fopen("quads.txt", "w");
 	for (i=0; i < currQuad; i++) {
-		fprintf(stdout, "%d: ", i);
+		fprintf(quads_fp, "%d: ", i);
 		printOperation((&quads[i])->op);
-		fprintf(stdout, "r:");
+		fprintf(quads_fp, "r:");
 		printArguments ((&quads[i])->result);
-		fprintf(stdout, "a1:");
+		fprintf(quads_fp, "a1:");
 		printArguments ((&quads[i])->arg1);
-		fprintf(stdout, "a2:");
+		fprintf(quads_fp, "a2:");
 		printArguments ((&quads[i])->arg2);
-		putchar('\n');
+		fprintf(quads_fp, "\n");
 	}
+	fclose(quads_fp);
 }
 

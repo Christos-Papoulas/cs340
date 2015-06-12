@@ -5,6 +5,8 @@
 #include "dispatcher.h"
 #include "const.h"
 #include "avm_string.h"
+#include "avm.h"
+#include "avm_error.h"
 
 extern unsigned int totalActuals;
 
@@ -27,4 +29,6 @@ library_func_t avm_getlibraryfunc(char* );
 avm_memcell* avm_getactual(unsigned int i);
 
 unsigned int avm_totalactuals( );
+
+void avm_registerlibfunc(char *id, library_func_t addr);
 #endif

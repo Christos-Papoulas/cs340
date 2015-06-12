@@ -506,6 +506,7 @@ void generate_FUNCSTART(quad* q) {
 	t->opcode=funcenter_v;
 
 	t->result=make_operand(q->result);
+	t->arg1 = t->arg2 = (void*) 0;
 
 	emit_instruction(t);
 	push_func(f);
@@ -588,7 +589,7 @@ void generate_relational(vmopcode op, quad* q) {
 	if(q->label < currprocessedquad())
 		t->result->val = (quads + q->label)->taddress;
 	else
-		add_incomplete_jump(nextinstructionlabel(), q->label);
+		add_incomplete_jump(nextinstructionlabel(), q->result->labelConst);
 	q->taddress = nextinstructionlabel();
 	emit_instruction(t);
 	return ;
@@ -1048,14 +1049,14 @@ void print_binary_code()
 	}
 	r = fwrite(&currNamedLibfuncs, sizeof(int), 1, bin);
 	hitError(r);
-	fprintf(stdout, "Library Function table: %d\n", currNamedLibfuncs);
+	/*fprintf(stdout, "Library Function table: %d\n", currNamedLibfuncs);
 	for(i = 0; i < currNamedLibfuncs; i++)
 	{	
 		fprintf(stdout, "%s ", libfuncs_getused(i));
 		if(i % 6 == 0 && i != 0) {
 			fprintf(stdout, "\n");
 		}
-	}
+	}*/
 	if(bin) 
 		fclose(bin);
 }

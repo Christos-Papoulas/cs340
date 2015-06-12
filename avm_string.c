@@ -72,5 +72,5 @@ char* undef_tostring(avm_memcell* m) {
 
 char* table_tostring(avm_memcell* m) {
 	assert(m && m->type == table_m);
-	/* den thelei sympliroma */
+	return "nil";
 }
