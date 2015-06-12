@@ -5,31 +5,31 @@ void execute_tablegetelem(instruction* i){;}
 void execute_tablesetelem(instruction* i){;}
 
 execute_func_t executeFuncs[]={
-	execute_assing,
+	execute_assing, //0
 	execute_add,
 	execute_sub,
 	execute_mul,
 	execute_div,
-	execute_mod,
+	execute_mod, //5
 	0,
 	0,
 	0,
 	0,
-	execute_jeq,
+	execute_jeq, //10
 	execute_jne,
 	execute_jgt,
 	execute_jlt,
 	execute_jge,
-	execute_jle,
+	execute_jle, //15
 	execute_jump,
 	execute_call,
 	execute_funcenter,
 	execute_funcexit,
-	execute_newtable,
+	execute_newtable, //20
 	execute_tablegetelem,
 	execute_tablesetelem,
 	execute_pusharg,
-	//execute_nop
+	//execute_nop //24
 };
 
 unsigned char 	executionFinished = 0;

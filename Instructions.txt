@@ -1,0 +1,13 @@
+0: pusharg	(res)integer-0-	
+1: call	(res)libfunc-0-	
+2: assign	(res)formal-0-	(arg1)retval-0-	
+Integer table: 1
+3 
+Double table: 0
+
+String table: 0
+
+User Function table: 0
+
+Library Function table: 1
+print 

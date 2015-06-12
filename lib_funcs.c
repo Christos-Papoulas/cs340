@@ -45,7 +45,7 @@ void libfunc_totalarguments(){
 void libfunc_print(){
 	
 	unsigned int n=avm_totalactuals();
-	//printf("avm_totalactuals %d\n",n);
+	printf("avm_totalactuals %d\n",n);
 	unsigned int i=0;
 	while(i<n){
 		char* s= avm_tostring(avm_getactual(i));

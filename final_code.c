@@ -672,7 +672,7 @@ void print_instructions_txt() {
 	{
 		fprintf(instr_fp, "%d: ", currPrintInstr);
 		
-		/*fprintf(instr_fp, "%d ", p->opcode);*/
+		//fprintf(instr_fp, "%d ", p->opcode);
 		/***************OPCODE***************/
 		switch(p->opcode)
 		{
@@ -950,7 +950,9 @@ void print_instructions_txt() {
 			fprintf(instr_fp, "\n");
 		}
 	}
+	fclose(instr_fp);
 	return ;
+
 }
 
 void print_binary_code()

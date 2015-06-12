@@ -1,20 +1,22 @@
 #include "avm.h"
 #include "dispatcher.h"
 #include "avm_mem.h"
+#include "lib_funcs.h"
 
 unsigned int 	glbnum;
 
 void avm_initialize() {
 	avm_initstack();
-	// avm_registerlibfunc("print", libfunc_print);
-	// avm_registerlibfunc("totalarguments", libfunc_totalarguments);
-	// avm_registerlibfunc("type_of", libfunc_typeof);
+	avm_registerlibfunc("print", libfunc_print);
+	avm_registerlibfunc("totalarguments", libfunc_totalarguments);
+	avm_registerlibfunc("type_of", libfunc_typeof);
 }
 
 void execute(){
 	avm_initialize();
 	
 	while(!executionFinished) {
+		printf("execute  one cycle\n");
 	    execute_cycle();
 	}
 	return ;
@@ -98,7 +100,7 @@ void read_binary_code() {
 	int code_Size;
 	fp =  fopen("BinaryCode.abc","rb");
 	if( fp== NULL) {
-		fprintf(stderr, "Errir opening file\n");
+		fprintf(stderr, "Error opening file\n");
 		return ;
 	}
 	/* read magic number */

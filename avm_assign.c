@@ -32,7 +32,7 @@ void execute_assing(instruction* instr) {
    avm_memcell* lv = avm_translate_operand(instr->result,(avm_memcell*)0);
    avm_memcell* rv = avm_translate_operand(instr->arg1,&ax);
 
-   assert(lv && (&stack[top] <= lv && &stack[AVM_STACKSIZE] > lv || lv == &retval));
+   assert(lv && (&stack[top] < lv && &stack[AVM_STACKSIZE-1] >= lv || lv == &retval || lv == &ax));
    assert(rv);
    t = rv->type;
    avm_assign(lv,rv);

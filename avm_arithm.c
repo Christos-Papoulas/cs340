@@ -42,8 +42,9 @@ void execute_arithmetic(instruction* instr) {
 	avm_memcell* rv1 = (avm_memcell*)avm_translate_operand(instr->arg1, &ax);
 	avm_memcell* rv2 = (avm_memcell*)avm_translate_operand(instr->arg2, &bx);
 	
-	assert(lv && (&stack[top] <= lv && &stack[AVM_STACKSIZE] > lv || lv == &retval) );
-  	assert(rv1 && rv2);
+	//assert(lv && (&stack[top] <= lv && &stack[AVM_STACKSIZE] > lv || lv == &retval) );
+  	assert(lv && (&stack[top] < lv && &stack[AVM_STACKSIZE-1] >= lv || lv == &retval || lv == &ax));
+	assert(rv1 && rv2);
 
 	if(rv1->type != integer_m || rv2->type != integer_m){
 		avm_error("not a number in arithmetic!\n");
